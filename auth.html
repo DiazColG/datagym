@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataGym - Iniciar Sesión</title>
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="auth.css">
+    
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Panel izquierdo - Bienvenida -->
+        <div class="auth-welcome">
+            <div class="welcome-content">
+                <div class="logo-large">
+                    <i class="fas fa-dumbbell"></i>
+                    <h1>DataGym</h1>
+                </div>
+                <p class="welcome-text">Tu compañero personal para alcanzar tus metas de fitness</p>
+                <div class="welcome-features">
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Seguimiento completo</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-cloud"></i>
+                        <span>Sincronización en la nube</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Acceso desde cualquier dispositivo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panel derecho - Formularios -->
+        <div class="auth-forms">
+            <div class="forms-container">
+                <!-- Formulario de inicio de sesión -->
+                <div id="loginForm" class="form-panel active">
+                    <h2>Iniciar Sesión</h2>
+                    <p class="form-subtitle">¡Bienvenido de nuevo! 💪</p>
+                    
+                    <!-- Botón de Google -->
+                    <button id="btnGoogleLogin" class="btn btn-google">
+                        <svg class="google-icon" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Continuar con Google
+                    </button>
+                    
+                    <div class="divider">
+                        <span>o</span>
+                    </div>
+                    
+                    <!-- Formulario de email/password -->
+                    <form id="emailLoginForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="loginEmail">
+                                <i class="fas fa-envelope"></i> Correo electrónico
+                            </label>
+                            <input 
+                                type="email" 
+                                id="loginEmail" 
+                                required 
+                                placeholder="tu@email.com"
+                                autocomplete="email"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loginPassword">
+                                <i class="fas fa-lock"></i> Contraseña
+                            </label>
+                            <div class="password-input">
+                                <input 
+                                    type="password" 
+                                    id="loginPassword" 
+                                    required 
+                                    placeholder="••••••••"
+                                    autocomplete="current-password"
+                                >
+                                <button type="button" class="toggle-password" data-target="loginPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                        </button>
+                    </form>
+                    
+                    <p class="switch-form">
+                        ¿No tienes cuenta? 
+                        <a href="#" id="showSignup">Regístrate aquí</a>
+                    </p>
+                </div>
+                
+                <!-- Formulario de registro -->
+                <div id="signupForm" class="form-panel">
+                    <h2>Crear Cuenta</h2>
+                    <p class="form-subtitle">¡Comienza tu viaje fitness! 🚀</p>
+                    
+                    <!-- Botón de Google -->
+                    <button id="btnGoogleSignup" class="btn btn-google">
+                        <svg class="google-icon" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Registrarse con Google
+                    </button>
+                    
+                    <div class="divider">
+                        <span>o</span>
+                    </div>
+                    
+                    <!-- Formulario de registro -->
+                    <form id="emailSignupForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="signupName">
+                                <i class="fas fa-user"></i> Nombre
+                            </label>
+                            <input 
+                                type="text" 
+                                id="signupName" 
+                                required 
+                                placeholder="Tu nombre"
+                                autocomplete="name"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="signupEmail">
+                                <i class="fas fa-envelope"></i> Correo electrónico
+                            </label>
+                            <input 
+                                type="email" 
+                                id="signupEmail" 
+                                required 
+                                placeholder="tu@email.com"
+                                autocomplete="email"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="signupPassword">
+                                <i class="fas fa-lock"></i> Contraseña
+                            </label>
+                            <div class="password-input">
+                                <input 
+                                    type="password" 
+                                    id="signupPassword" 
+                                    required 
+                                    placeholder="Mínimo 6 caracteres"
+                                    autocomplete="new-password"
+                                    minlength="6"
+                                >
+                                <button type="button" class="toggle-password" data-target="signupPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="signupPasswordConfirm">
+                                <i class="fas fa-lock"></i> Confirmar contraseña
+                            </label>
+                            <div class="password-input">
+                                <input 
+                                    type="password" 
+                                    id="signupPasswordConfirm" 
+                                    required 
+                                    placeholder="Repite tu contraseña"
+                                    autocomplete="new-password"
+                                    minlength="6"
+                                >
+                                <button type="button" class="toggle-password" data-target="signupPasswordConfirm">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Crear cuenta
+                        </button>
+                    </form>
+                    
+                    <p class="switch-form">
+                        ¿Ya tienes cuenta? 
+                        <a href="#" id="showLogin">Inicia sesión aquí</a>
+                    </p>
+                </div>
+                
+                <!-- Loading spinner -->
+                <div id="authLoading" class="auth-loading">
+                    <div class="spinner"></div>
+                    <p>Autenticando...</p>
+                </div>
+                
+                <!-- Mensaje de error -->
+                <div id="authError" class="auth-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorMessage"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Script de autenticación -->
+    <script type="module">
+        import { signInWithGoogle, signUpWithEmail, signInWithEmail } from './auth.js';
+        import { crearPerfilUsuario } from './firestore.js';
+        
+        // Elementos del DOM
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const emailLoginForm = document.getElementById('emailLoginForm');
+        const emailSignupForm = document.getElementById('emailSignupForm');
+        const authLoading = document.getElementById('authLoading');
+        const authError = document.getElementById('authError');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Alternar entre login y signup
+        document.getElementById('showSignup').addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.classList.remove('active');
+            signupForm.classList.add('active');
+            hideError();
+        });
+        
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            signupForm.classList.remove('active');
+            loginForm.classList.add('active');
+            hideError();
+        });
+        
+        // Toggle de contraseña
+        document.querySelectorAll('.toggle-password').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+        
+        // Login con Google (ambos botones)
+        document.getElementById('btnGoogleLogin').addEventListener('click', handleGoogleAuth);
+        document.getElementById('btnGoogleSignup').addEventListener('click', handleGoogleAuth);
+        
+        async function handleGoogleAuth() {
+            showLoading();
+            hideError();
+            
+            try {
+                const result = await signInWithGoogle();
+                
+                // Crear perfil si es nuevo usuario
+                await crearPerfilUsuario(result.user.uid, {
+                    nombre: result.user.displayName,
+                    email: result.user.email,
+                    fotoURL: result.user.photoURL
+                });
+                
+                // Redirigir a la app
+                window.location.href = 'index.html';
+            } catch (error) {
+                hideLoading();
+                showError(getErrorMessage(error.code));
+            }
+        }
+        
+        // Login con email/password
+        emailLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            hideError();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                await signInWithEmail(email, password);
+                window.location.href = 'index.html';
+            } catch (error) {
+                hideLoading();
+                showError(getErrorMessage(error.code));
+            }
+        });
+        
+        // Registro con email/password
+        emailSignupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            hideError();
+            
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+            
+            // Validar que las contraseñas coincidan
+            if (password !== passwordConfirm) {
+                hideLoading();
+                showError('Las contraseñas no coinciden');
+                return;
+            }
+            
+            try {
+                const result = await signUpWithEmail(email, password);
+                
+                // Crear perfil de usuario
+                await crearPerfilUsuario(result.user.uid, {
+                    nombre: name,
+                    email: email,
+                    fotoURL: ''
+                });
+                
+                window.location.href = 'index.html';
+            } catch (error) {
+                hideLoading();
+                showError(getErrorMessage(error.code));
+            }
+        });
+        
+        // Funciones de utilidad
+        function showLoading() {
+            authLoading.style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            authLoading.style.display = 'none';
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            authError.style.display = 'flex';
+        }
+        
+        function hideError() {
+            authError.style.display = 'none';
+        }
+        
+        function getErrorMessage(errorCode) {
+            const errorMessages = {
+                'auth/user-not-found': 'No existe una cuenta con este correo',
+                'auth/wrong-password': 'Contraseña incorrecta',
+                'auth/email-already-in-use': 'Este correo ya está registrado',
+                'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres',
+                'auth/invalid-email': 'Correo electrónico inválido',
+                'auth/popup-closed-by-user': 'Inicio de sesión cancelado',
+                'auth/network-request-failed': 'Error de conexión. Verifica tu internet',
+                'auth/too-many-requests': 'Demasiados intentos. Intenta más tarde',
+                'auth/user-disabled': 'Esta cuenta ha sido deshabilitada'
+            };
+            
+            return errorMessages[errorCode] || 'Error al autenticar. Intenta de nuevo';
+        }
+    </script>
+</body>
+</html>
