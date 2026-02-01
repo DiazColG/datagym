@@ -14,8 +14,26 @@
     
     <!-- Chart.js para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <!-- Script de protección de rutas -->
+    <script type="module">
+        import { onAuthChange } from './auth.js';
+        
+        // Verificar autenticación antes de cargar la app
+        onAuthChange((user) => {
+            if (!user) {
+                // Si no está autenticado, redirigir a auth.html
+                window.location.href = 'auth.html';
+            }
+        });
+    </script>
 </head>
 <body>
+    <!-- Loading overlay inicial -->
+    <div id="appLoading" class="app-loading">
+        <div class="spinner-large"></div>
+        <p>Cargando DataGym...</p>
+    </div>
     <!-- Barra de navegación -->
     <nav class="navbar">
         <div class="nav-container">
@@ -61,6 +79,15 @@
                     <i class="fas fa-stopwatch"></i> <span>Timer</span>
                 </a></li>
             </ul>
+            
+            <!-- Información del usuario -->
+            <div class="user-info" id="userInfo" style="display: none;">
+                <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
+                <span id="userName" class="user-name"></span>
+                <button id="btnLogout" class="btn-logout" title="Cerrar sesión">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -70,7 +97,7 @@
         <!-- SECCIÓN 1: INICIO -->
         <section id="inicio" class="section active">
             <div class="section-header">
-                <h1><i class="fas fa-dumbbell"></i> Bienvenido a DataGym</h1>
+                <h1 id="welcomeMessage"><i class="fas fa-dumbbell"></i> Bienvenido a DataGym</h1>
                 <p class="subtitle">Tu compañero personal para alcanzar tus metas de fitness</p>
             </div>
             
