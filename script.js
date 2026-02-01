@@ -28,6 +28,8 @@ let userId = null;
 let unsubscribeEjercicios = null;
 let unsubscribePeso = null;
 let unsubscribeAgua = null;
+let fechaActual = new Date().toISOString().slice(0, 10);
+let checkMidnightInterval = null;
 
 // =========================================
 // INICIALIZACIÓN DE LA APLICACIÓN
@@ -77,10 +79,18 @@ function mostrarInfoUsuario(user) {
     }
     
     // Mostrar avatar y nombre en header (si existe)
+    const userInfo = document.getElementById('userInfo');
+    if (userInfo) {
+        userInfo.style.display = 'flex';
+    }
+    
     const userAvatar = document.getElementById('userAvatar');
     if (userAvatar) {
         if (user.photoURL) {
             userAvatar.src = user.photoURL;
+        } else {
+            // Avatar por defecto
+            userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=3b82f6&color=fff`;
         }
     }
     
@@ -91,10 +101,15 @@ function mostrarInfoUsuario(user) {
 }
 
 function configurarLogout() {
-    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutBtn = document.getElementById('btnLogout');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             try {
+                // Limpiar interval de verificación de medianoche
+                if (checkMidnightInterval) {
+                    clearInterval(checkMidnightInterval);
+                }
+                
                 // Desuscribir listeners
                 if (unsubscribeEjercicios) unsubscribeEjercicios();
                 if (unsubscribePeso) unsubscribePeso();
@@ -251,9 +266,27 @@ function configurarListenersFirestore() {
         actualizarGraficoPesoConDatos(historial);
     });
     
-    // Listener de agua del día actual
-    const hoy = new Date().toISOString().slice(0, 10);
-    unsubscribeAgua = escucharAguaDelDia(userId, hoy, (datos) => {
+    // Configurar listener de agua para el día actual
+    configurarListenerAgua();
+    
+    // Verificar cambio de fecha cada minuto
+    checkMidnightInterval = setInterval(() => {
+        const nuevaFecha = new Date().toISOString().slice(0, 10);
+        if (nuevaFecha !== fechaActual) {
+            console.log('Cambio de fecha detectado, actualizando listener de agua...');
+            fechaActual = nuevaFecha;
+            // Reconfigurar listener de agua para el nuevo día
+            if (unsubscribeAgua) {
+                unsubscribeAgua();
+            }
+            configurarListenerAgua();
+        }
+    }, 60000); // Verificar cada minuto
+}
+
+function configurarListenerAgua() {
+    fechaActual = new Date().toISOString().slice(0, 10);
+    unsubscribeAgua = escucharAguaDelDia(userId, fechaActual, (datos) => {
         console.log('Agua actualizada:', datos.vasos);
         actualizarVistaAguaConDatos(datos);
     });
@@ -731,14 +764,17 @@ function mostrarHistorialPesoConDatos(pesajes) {
         return;
     }
     
-    lista.innerHTML = pesajes.map(pesaje => `
-        <div class="peso-item">
-            <div>
-                <div class="peso-valor">${pesaje.valor} kg</div>
-                <div class="peso-fecha">${formatearFecha(pesaje.fechaISO)}</div>
+    lista.innerHTML = pesajes.map(pesaje => {
+        const pesoValor = pesaje.valor || pesaje.peso || 0;
+        return `
+            <div class="peso-item">
+                <div>
+                    <div class="peso-valor">${pesoValor} kg</div>
+                    <div class="peso-fecha">${formatearFecha(pesaje.fechaISO)}</div>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function actualizarTendenciaPesoConDatos(pesajes) {
@@ -753,8 +789,8 @@ function actualizarTendenciaPesoConDatos(pesajes) {
     // Los pesajes ya vienen ordenados por fecha descendente desde Firestore
     const pesajesOrdenados = [...pesajes].reverse(); // Invertir para tener el orden ascendente
     
-    const pesoInicial = pesajesOrdenados[0].valor;
-    const pesoFinal = pesajesOrdenados[pesajesOrdenados.length - 1].valor;
+    const pesoInicial = pesajesOrdenados[0].valor || pesajesOrdenados[0].peso || 0;
+    const pesoFinal = pesajesOrdenados[pesajesOrdenados.length - 1].valor || pesajesOrdenados[pesajesOrdenados.length - 1].peso || 0;
     const diferencia = pesoFinal - pesoInicial;
     
     let icono = '';
@@ -996,7 +1032,7 @@ function actualizarGraficoPesoConDatos(pesajes) {
         return fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
     });
     
-    const datos = pesajesOrdenados.map(p => p.valor);
+    const datos = pesajesOrdenados.map(p => p.valor || p.peso || 0);
     
     if (graficos.peso) {
         graficos.peso.destroy();
@@ -1252,8 +1288,12 @@ function showToast(mensaje, tipo = 'success') {
     setTimeout(() => {
         notif.style.animation = 'slideOut 0.3s ease-out';
         setTimeout(() => {
-            if (notif.parentNode) {
-                document.body.removeChild(notif);
+            try {
+                if (notif.parentNode) {
+                    document.body.removeChild(notif);
+                }
+            } catch (error) {
+                console.error('Error al remover notificación:', error);
             }
         }, 300);
     }, 3000);
