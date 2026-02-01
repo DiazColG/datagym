@@ -77,6 +77,42 @@
 - Notificación al finalizar
 - Alerta sonora y vibración (si está disponible)
 
+---
+
+## 🔥 Firebase Integration
+
+### Autenticación de Usuarios
+DataGym ahora incluye un sistema completo de autenticación:
+- 🔐 **Google Sign-In**: Inicia sesión con un clic usando tu cuenta de Google
+- 📧 **Email/Password**: Crea una cuenta con tu correo electrónico
+- 🔒 **Protección de rutas**: Solo usuarios autenticados pueden acceder a la app
+- 👤 **Perfil de usuario**: Muestra tu nombre y foto en el header
+- 🚪 **Logout seguro**: Cierra sesión y limpia los datos locales
+
+### Base de Datos en la Nube
+- ☁️ **Firestore**: Todos los datos se guardan en tiempo real
+- 🔄 **Sincronización automática**: Cambios instantáneos entre dispositivos
+- 📱 **Multi-dispositivo**: Accede desde cualquier lugar
+- 🔐 **Datos privados**: Cada usuario solo ve su información
+- 💾 **Modo offline**: Cache automático para trabajar sin conexión
+
+### Variables de Entorno
+Las siguientes variables están configuradas en Vercel (para producción):
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+- `VITE_FIREBASE_MEASUREMENT_ID`
+
+Para desarrollo local, crea un archivo `.env` basado en `.env.example`
+
+### Estructura de Datos
+Ver documentación completa en [`/docs/firestore-schema.md`](./docs/firestore-schema.md)
+
+---
+
 ## 🎨 Diseño
 
 ### Paleta de Colores
@@ -94,7 +130,7 @@
 ## 🚀 Cómo Usar
 
 ### Instalación
-No requiere instalación ni configuración. Simplemente:
+No requiere instalación compleja. Sigue estos pasos:
 
 1. **Descarga el proyecto**
    ```bash
@@ -102,10 +138,13 @@ No requiere instalación ni configuración. Simplemente:
    cd datagym
    ```
 
-2. **Abre el archivo HTML**
-   - Doble clic en `index.html`, o
-   - Arrástralo a tu navegador, o
-   - Usa un servidor local:
+2. **Configura Firebase** (solo para desarrollo local)
+   - Crea un archivo `.env` basado en `.env.example`
+   - Obtén tus credenciales de Firebase Console
+   - Copia los valores en el archivo `.env`
+
+3. **Abre la aplicación**
+   - Usa un servidor local para desarrollo:
      ```bash
      # Python 3
      python -m http.server 8000
@@ -113,10 +152,16 @@ No requiere instalación ni configuración. Simplemente:
      # Node.js
      npx serve
      ```
+   - O despliega en Vercel/Netlify (variables de entorno configuradas automáticamente)
 
-3. **¡Listo!** Ya puedes usar DataGym
+4. **¡Listo!** Regístrate o inicia sesión con Google o Email
 
 ### Uso Básico
+
+#### Primera vez
+1. Ve a la página de autenticación
+2. **Regístrate** con Google o Email/Password
+3. ¡Empieza a registrar tus ejercicios!
 
 #### Agregar un Ejercicio
 1. Ve a la sección **Ejercicios**
@@ -148,24 +193,31 @@ No requiere instalación ni configuración. Simplemente:
 
 ## 💾 Almacenamiento de Datos
 
-Todos los datos se guardan localmente en tu navegador usando **localStorage**:
-- ✅ No requiere internet después de la carga inicial
-- ✅ Tus datos permanecen privados en tu dispositivo
-- ✅ Persistencia entre sesiones
-- ⚠️ Los datos se eliminan si borras el caché del navegador
+Todos los datos se guardan en **Firebase Firestore**, una base de datos en tiempo real en la nube:
+- ✅ **Sincronización automática** entre todos tus dispositivos
+- ✅ **Acceso desde cualquier lugar** con tu cuenta
+- ✅ **Datos seguros** con autenticación Firebase
+- ✅ **Actualización en tiempo real** sin recargar la página
+- ✅ **Modo offline** con caché local automático
+- 🔐 **Privacidad garantizada**: cada usuario solo ve sus propios datos
 
 ### Datos Almacenados
-- Array de ejercicios realizados
-- Historial de pesajes
-- Contador de agua del día
-- Última fecha de reset del contador de agua
+- Perfil de usuario (nombre, email, foto)
+- Ejercicios realizados con fecha y detalles
+- Historial de peso con gráficos
+- Consumo de agua diario
+- Configuración de preferencias
+
+### Migración Automática
+Si ya usabas DataGym con localStorage, tus datos se migrarán automáticamente a la nube la primera vez que inicies sesión.
 
 ## 🛠️ Tecnologías Utilizadas
 
 - **HTML5**: Estructura semántica
 - **CSS3**: Diseño responsive con Flexbox y Grid
-- **JavaScript Vanilla**: Sin frameworks ni dependencias
-- **localStorage**: Persistencia de datos
+- **JavaScript ES6+**: Lógica moderna con módulos
+- **Firebase Authentication**: Autenticación de usuarios (Google y Email/Password)
+- **Cloud Firestore**: Base de datos en tiempo real
 - **Chart.js**: Visualización de gráficos
 - **Font Awesome**: Iconos
 
@@ -173,11 +225,19 @@ Todos los datos se guardan localmente en tu navegador usando **localStorage**:
 
 ```
 datagym/
-├── index.html      # Estructura HTML principal
-├── styles.css      # Estilos completos de la aplicación
-├── script.js       # Lógica JavaScript
-├── README.md       # Este archivo
-└── LICENSE         # Licencia MIT
+├── index.html              # Estructura HTML principal (protegida por autenticación)
+├── auth.html              # Página de login/registro
+├── styles.css             # Estilos completos de la aplicación
+├── auth.css               # Estilos de autenticación
+├── script.js              # Lógica JavaScript integrada con Firebase
+├── firebase-config.js     # Configuración de Firebase
+├── auth.js                # Módulo de autenticación
+├── firestore.js           # Módulo de base de datos Firestore
+├── .env.example           # Template de variables de entorno
+├── docs/
+│   └── firestore-schema.md # Documentación de estructura de datos
+├── README.md              # Este archivo
+└── LICENSE                # Licencia MIT
 ```
 
 ## 🎯 Público Objetivo
