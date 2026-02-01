@@ -37,13 +37,21 @@ try {
     if (document.body) {
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#ef4444;color:white;padding:20px;border-radius:8px;z-index:9999;max-width:500px;text-align:center;';
-        errorDiv.innerHTML = `
-            <h3>⚠️ Error de configuración</h3>
-            <p>No se pudo conectar con Firebase. Por favor, recarga la página.</p>
-            <button onclick="location.reload()" style="margin-top:10px;padding:8px 16px;background:white;color:#ef4444;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">
-                Recargar página
-            </button>
-        `;
+        
+        const title = document.createElement('h3');
+        title.textContent = '⚠️ Error de configuración';
+        
+        const message = document.createElement('p');
+        message.textContent = 'No se pudo conectar con Firebase. Por favor, recarga la página.';
+        
+        const button = document.createElement('button');
+        button.textContent = 'Recargar página';
+        button.style.cssText = 'margin-top:10px;padding:8px 16px;background:white;color:#ef4444;border:none;border-radius:4px;cursor:pointer;font-weight:bold;';
+        button.addEventListener('click', () => location.reload());
+        
+        errorDiv.appendChild(title);
+        errorDiv.appendChild(message);
+        errorDiv.appendChild(button);
         document.body.appendChild(errorDiv);
     }
 }

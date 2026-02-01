@@ -11,7 +11,6 @@ console.log('DB:', db ? '✅ Cargado' : '❌ No cargado');
 
 // Importar módulos de Firebase
 import { onAuthChange, logout as firebaseLogout } from './auth.js';
-import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import {
     guardarEjercicio,
     obtenerEjercicios,
@@ -25,15 +24,6 @@ import {
     incrementarVasoAgua,
     escucharAguaDelDia
 } from './firestore.js';
-
-// Verificar autenticación
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        console.log('✅ Usuario autenticado:', user.email);
-    } else {
-        console.log('⚠️ Usuario NO autenticado');
-    }
-});
 
 // =========================================
 // VARIABLES GLOBALES
