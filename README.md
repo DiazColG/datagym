@@ -96,17 +96,13 @@ DataGym ahora incluye un sistema completo de autenticación:
 - 🔐 **Datos privados**: Cada usuario solo ve su información
 - 💾 **Modo offline**: Cache automático para trabajar sin conexión
 
-### Variables de Entorno
-Las siguientes variables están configuradas en Vercel (para producción):
-- `VITE_FIREBASE_API_KEY`
-- `VITE_FIREBASE_AUTH_DOMAIN`
-- `VITE_FIREBASE_PROJECT_ID`
-- `VITE_FIREBASE_STORAGE_BUCKET`
-- `VITE_FIREBASE_MESSAGING_SENDER_ID`
-- `VITE_FIREBASE_APP_ID`
-- `VITE_FIREBASE_MEASUREMENT_ID`
+### Configuración de Firebase
+Las credenciales de Firebase están hardcodeadas en `firebase-config.js` para simplificar el desarrollo y despliegue.
 
-Para desarrollo local, crea un archivo `.env` basado en `.env.example`
+**Nota de Seguridad**: Las credenciales de Firebase para frontend son públicas por diseño. La seguridad viene de:
+- ✅ Reglas de Firestore (ya configuradas)
+- ✅ Dominios autorizados en Firebase Console
+- ✅ Authentication requerida para acceder a datos
 
 ### Estructura de Datos
 Ver documentación completa en [`/docs/firestore-schema.md`](./docs/firestore-schema.md)
@@ -210,6 +206,42 @@ Todos los datos se guardan en **Firebase Firestore**, una base de datos en tiemp
 
 ### Migración Automática
 Si ya usabas DataGym con localStorage, tus datos se migrarán automáticamente a la nube la primera vez que inicies sesión.
+
+## 🐛 Troubleshooting
+
+### La página se queda cargando
+
+Si ves un spinner infinito:
+1. Abre la consola del navegador (F12)
+2. Busca errores en rojo
+3. Si ves errores de Firebase, verifica que:
+   - Firebase Console tenga el dominio autorizado
+   - Las reglas de Firestore estén publicadas
+   - Tu navegador no esté bloqueando cookies/JavaScript
+
+### Error de autenticación
+
+Si no puedes hacer login:
+1. Verifica que estás usando un email válido
+2. Para Google Sign-In, asegúrate de tener popups habilitados
+3. Limpia cache y cookies del navegador
+4. Verifica tu conexión a internet
+
+### Los datos no se guardan
+
+Si los datos no persisten:
+1. Verifica tu conexión a internet
+2. Revisa la consola por errores de Firestore
+3. Asegúrate de estar autenticado
+4. Recarga la página e intenta de nuevo
+
+### Error "Cannot read properties of undefined"
+
+Si ves este error en la consola:
+1. Asegúrate de que Firebase se inicializó correctamente
+2. Busca el mensaje "✅ Firebase inicializado correctamente" en la consola
+3. Si no lo ves, verifica que `firebase-config.js` se cargó primero
+4. Limpia la caché del navegador y recarga
 
 ## 🛠️ Tecnologías Utilizadas
 

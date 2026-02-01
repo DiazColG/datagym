@@ -8,40 +8,45 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// Validar que todas las variables de entorno estén definidas
-const requiredEnvVars = [
-    'VITE_FIREBASE_API_KEY',
-    'VITE_FIREBASE_AUTH_DOMAIN',
-    'VITE_FIREBASE_PROJECT_ID',
-    'VITE_FIREBASE_STORAGE_BUCKET',
-    'VITE_FIREBASE_MESSAGING_SENDER_ID',
-    'VITE_FIREBASE_APP_ID'
-];
-
-for (const envVar of requiredEnvVars) {
-    if (!import.meta.env[envVar]) {
-        console.error(`❌ Variable de entorno faltante: ${envVar}`);
-        throw new Error(`Configuración de Firebase incompleta. Falta: ${envVar}`);
-    }
-}
-
-// Configuración de Firebase usando variables de entorno
+// Configuración de Firebase
+// Estas credenciales son públicas y van en el frontend
+// La seguridad está garantizada por las reglas de Firestore
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+    apiKey: "AIzaSyBFx3udq1-sUQnB9nyYuZ50E1ClZhZZNvo",
+    authDomain: "datagym-gdcrp.firebaseapp.com",
+    projectId: "datagym-gdcrp",
+    storageBucket: "datagym-gdcrp.firebasestorage.app",
+    messagingSenderId: "219326258867",
+    appId: "1:219326258867:web:c7409f1559b2281bd05ac6",
+    measurementId: "G-P4SH6G791D"
 };
 
 // Inicializar Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+let auth;
+let db;
 
-// Inicializar servicios de Firebase
-const auth = getAuth(app);
-const db = getFirestore(app);
+try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    console.log('✅ Firebase inicializado correctamente');
+} catch (error) {
+    console.error('❌ Error inicializando Firebase:', error);
+    // Mostrar mensaje de error al usuario
+    if (document.body) {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#ef4444;color:white;padding:20px;border-radius:8px;z-index:9999;max-width:500px;text-align:center;';
+        errorDiv.innerHTML = `
+            <h3>⚠️ Error de configuración</h3>
+            <p>No se pudo conectar con Firebase. Por favor, recarga la página.</p>
+            <button onclick="location.reload()" style="margin-top:10px;padding:8px 16px;background:white;color:#ef4444;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">
+                Recargar página
+            </button>
+        `;
+        document.body.appendChild(errorDiv);
+    }
+}
 
 // Exportar instancias para uso en otros módulos
-export { auth, db };
+export { auth, db, app };
