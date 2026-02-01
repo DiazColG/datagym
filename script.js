@@ -678,6 +678,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const canvas = document.getElementById('graficoCaloriasSemana');
         if (!canvas) return;
         
+        // Verificar si Chart.js está disponible
+        if (typeof Chart === 'undefined') {
+            canvas.parentElement.innerHTML = '<p class="empty-state">Chart.js no está disponible. Por favor, verifica tu conexión a internet.</p>';
+            return;
+        }
+        
         const dias = obtenerUltimos7Dias();
         const ejercicios = obtenerEjercicios();
         
@@ -723,6 +729,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function actualizarGraficoMinutosSemana() {
         const canvas = document.getElementById('graficoMinutosSemana');
         if (!canvas) return;
+        
+        // Verificar si Chart.js está disponible
+        if (typeof Chart === 'undefined') {
+            canvas.parentElement.innerHTML = '<p class="empty-state">Chart.js no está disponible. Por favor, verifica tu conexión a internet.</p>';
+            return;
+        }
         
         const dias = obtenerUltimos7Dias();
         const ejercicios = obtenerEjercicios();
@@ -772,6 +784,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const canvas = document.getElementById('graficoAguaSemana');
         if (!canvas) return;
         
+        // Verificar si Chart.js está disponible
+        if (typeof Chart === 'undefined') {
+            canvas.parentElement.innerHTML = '<p class="empty-state">Chart.js no está disponible. Por favor, verifica tu conexión a internet.</p>';
+            return;
+        }
+        
         // Por simplicidad, mostramos datos simulados para el agua
         // En una app real, guardaríamos el historial de agua diario
         const dias = obtenerUltimos7Dias();
@@ -816,6 +834,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function actualizarGraficoPeso() {
         const canvas = document.getElementById('graficoPeso');
         if (!canvas) return;
+        
+        // Verificar si Chart.js está disponible
+        if (typeof Chart === 'undefined') {
+            canvas.parentElement.innerHTML = '<p class="empty-state">Chart.js no está disponible. Por favor, verifica tu conexión a internet.</p>';
+            return;
+        }
         
         const pesajes = obtenerPesajes();
         
@@ -1039,12 +1063,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('timerSegundos').disabled = false;
         
         timerIniciado = false;
-        
-        // Notificación sonora (si el navegador lo permite)
-        try {
-            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiDcIF2m98OScTgwOUKXh8LhjHAU2k9n0ynkrBSF1vO7ijEIMEle57OyrWhMMSKDh8r1sIQUsgs/z2og3CBdrve7mnEwLE1Ck4PC5ZB0GM5LY88p5KwUfc7ru4Y1DDBRVO+nvsV0VDU2h4vO+biEEK4LO8tiIOAcXar3t5pxMDBJPpN/vuGMcBDOS2PPJeisEHXC57N+ORAwRVTnm7bNeFA1NoOHys24gBCuBzvLYhzcIF2m87eacTAwST6Te7rdjHQU2kNjyyXkrBBxwuevejkQMEFY65ex0XhYOUqPi9L5uIQUrgs7y2IY4BxdpvO3mnUsNE1Cj3+y3YxwEM5DY88l5KgUdcLjq3Y5EDBFVOOXrdF4VDlGi4PG9byIFK4HO8tiGOQgYabzs5pxMCxNQot7rt2IdBTSQ2PPJeSoGHm+46+CORA0SV",
-            audio.play().catch(() => {});
-        } catch (e) {}
         
         mostrarNotificacion('¡Timer terminado! ⏰');
         
