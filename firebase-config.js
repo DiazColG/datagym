@@ -8,6 +8,23 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// Validar que todas las variables de entorno estén definidas
+const requiredEnvVars = [
+    'VITE_FIREBASE_API_KEY',
+    'VITE_FIREBASE_AUTH_DOMAIN',
+    'VITE_FIREBASE_PROJECT_ID',
+    'VITE_FIREBASE_STORAGE_BUCKET',
+    'VITE_FIREBASE_MESSAGING_SENDER_ID',
+    'VITE_FIREBASE_APP_ID'
+];
+
+for (const envVar of requiredEnvVars) {
+    if (!import.meta.env[envVar]) {
+        console.error(`❌ Variable de entorno faltante: ${envVar}`);
+        throw new Error(`Configuración de Firebase incompleta. Falta: ${envVar}`);
+    }
+}
+
 // Configuración de Firebase usando variables de entorno
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

@@ -220,7 +220,8 @@
     <!-- Script de autenticación -->
     <script type="module">
         import { signInWithGoogle, signUpWithEmail, signInWithEmail } from './auth.js';
-        import { crearPerfilUsuario } from './firestore.js';
+        import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { db } from './firebase-config.js';
         
         // Elementos del DOM
         const loginForm = document.getElementById('loginForm');
@@ -276,12 +277,13 @@
             try {
                 const result = await signInWithGoogle();
                 
-                // Crear perfil si es nuevo usuario
-                await crearPerfilUsuario(result.user.uid, {
+                // Crear o actualizar perfil (merge para no sobrescribir datos existentes)
+                const perfilRef = doc(db, 'users', result.user.uid, 'profile', 'info');
+                await setDoc(perfilRef, {
                     nombre: result.user.displayName,
                     email: result.user.email,
                     fotoURL: result.user.photoURL
-                });
+                }, { merge: true });
                 
                 // Redirigir a la app
                 window.location.href = 'index.html';
@@ -330,12 +332,13 @@
             try {
                 const result = await signUpWithEmail(email, password);
                 
-                // Crear perfil de usuario
-                await crearPerfilUsuario(result.user.uid, {
+                // Crear perfil de usuario (merge para evitar conflictos)
+                const perfilRef = doc(db, 'users', result.user.uid, 'profile', 'info');
+                await setDoc(perfilRef, {
                     nombre: name,
                     email: email,
                     fotoURL: ''
-                });
+                }, { merge: true });
                 
                 window.location.href = 'index.html';
             } catch (error) {
