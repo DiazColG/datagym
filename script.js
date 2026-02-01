@@ -765,7 +765,7 @@ function mostrarHistorialPesoConDatos(pesajes) {
     }
     
     lista.innerHTML = pesajes.map(pesaje => {
-        const pesoValor = pesaje.valor || pesaje.peso || 0;
+        const pesoValor = obtenerValorPeso(pesaje);
         return `
             <div class="peso-item">
                 <div>
@@ -789,8 +789,8 @@ function actualizarTendenciaPesoConDatos(pesajes) {
     // Los pesajes ya vienen ordenados por fecha descendente desde Firestore
     const pesajesOrdenados = [...pesajes].reverse(); // Invertir para tener el orden ascendente
     
-    const pesoInicial = pesajesOrdenados[0].valor || pesajesOrdenados[0].peso || 0;
-    const pesoFinal = pesajesOrdenados[pesajesOrdenados.length - 1].valor || pesajesOrdenados[pesajesOrdenados.length - 1].peso || 0;
+    const pesoInicial = obtenerValorPeso(pesajesOrdenados[0]);
+    const pesoFinal = obtenerValorPeso(pesajesOrdenados[pesajesOrdenados.length - 1]);
     const diferencia = pesoFinal - pesoInicial;
     
     let icono = '';
@@ -1032,7 +1032,7 @@ function actualizarGraficoPesoConDatos(pesajes) {
         return fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
     });
     
-    const datos = pesajesOrdenados.map(p => p.valor || p.peso || 0);
+    const datos = pesajesOrdenados.map(p => obtenerValorPeso(p));
     
     if (graficos.peso) {
         graficos.peso.destroy();
@@ -1260,6 +1260,12 @@ function formatearFecha(fechaISO) {
         minute: '2-digit'
     };
     return fecha.toLocaleString('es-ES', opciones);
+}
+
+// Helper para obtener valor de peso de manera consistente
+// Soporta tanto 'valor' (nuevo) como 'peso' (migrado de localStorage)
+function obtenerValorPeso(pesaje) {
+    return pesaje.valor || pesaje.peso || 0;
 }
 
 function showToast(mensaje, tipo = 'success') {
