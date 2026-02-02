@@ -114,3 +114,47 @@ export function onAuthChange(callback) {
 export function getCurrentUser() {
     return auth.currentUser;
 }
+
+// =========================================
+// VERIFICAR SI NECESITA ONBOARDING
+// =========================================
+/**
+ * Verifica si el usuario necesita completar el onboarding
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<boolean>} true si necesita onboarding
+ */
+export async function necesitaOnboarding(userId) {
+    try {
+        // Importar dinámicamente para evitar dependencias circulares
+        const { tienePerfilCompleto } = await import('./profile-manager.js');
+        const perfilCompleto = await tienePerfilCompleto(userId);
+        return !perfilCompleto;
+    } catch (error) {
+        console.error('Error al verificar onboarding:', error);
+        // En caso de error, asumir que necesita onboarding
+        return true;
+    }
+}
+
+// =========================================
+// CREAR PERFIL INICIAL AL REGISTRARSE
+// =========================================
+/**
+ * Crea un perfil inicial cuando un usuario se registra
+ * @param {User} user - Usuario de Firebase Auth
+ * @returns {Promise<void>}
+ */
+export async function crearPerfilInicialUsuario(user) {
+    try {
+        // Importar dinámicamente
+        const { crearPerfilInicial } = await import('./profile-manager.js');
+        await crearPerfilInicial(user.uid, {
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL
+        });
+        console.log('✅ Perfil inicial creado para nuevo usuario');
+    } catch (error) {
+        console.error('❌ Error al crear perfil inicial:', error);
+    }
+}
