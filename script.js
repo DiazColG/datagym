@@ -255,9 +255,16 @@ function actualizarMetaAgua() {
     
     // Actualizar el texto del contador de agua
     const aguaTexto = document.getElementById('aguaTexto');
-    if (aguaTexto && aguaTexto.textContent.includes('/')) {
-        const actual = aguaTexto.textContent.split('/')[0].trim();
-        aguaTexto.textContent = `${actual}/${perfilUsuario.aguaObjetivo.vasos}`;
+    if (aguaTexto) {
+        const textoActual = aguaTexto.textContent;
+        // Verificar si el texto tiene el formato esperado con '/'
+        if (textoActual && textoActual.includes('/')) {
+            const actual = textoActual.split('/')[0].trim();
+            aguaTexto.textContent = `${actual}/${perfilUsuario.aguaObjetivo.vasos}`;
+        } else {
+            // Si no tiene el formato, establecer el formato inicial
+            aguaTexto.textContent = `0/${perfilUsuario.aguaObjetivo.vasos}`;
+        }
     }
 }
 

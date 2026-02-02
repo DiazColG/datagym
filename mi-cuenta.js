@@ -205,12 +205,15 @@ function cargarDatosPerfil() {
     const nombre = document.getElementById('profileNombre');
     const email = document.getElementById('profileEmail');
     
+    // URL base para avatars (puede configurarse externamente)
+    const AVATAR_SERVICE_URL = 'https://ui-avatars.com/api/';
+    
     if (avatar) {
         const user = auth.currentUser;
         if (user && user.photoURL) {
             avatar.src = user.photoURL;
         } else {
-            avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(perfilActual.nombre)}&background=3b82f6&color=fff`;
+            avatar.src = `${AVATAR_SERVICE_URL}?name=${encodeURIComponent(perfilActual.nombre)}&background=3b82f6&color=fff`;
         }
     }
     

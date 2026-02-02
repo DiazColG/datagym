@@ -138,6 +138,7 @@ export function calcularProteinas(peso, nivelActividad) {
  * Calcula el consumo diario recomendado de agua
  * Base: 35 ml por kg de peso corporal
  * Ajuste: +500ml por nivel de actividad moderado/alto
+ * Nota: 1 vaso = 250ml (estándar usado en esta aplicación)
  * 
  * @param {number} peso - Peso en kilogramos
  * @param {string} nivelActividad - Nivel de actividad física

@@ -276,7 +276,8 @@ function guardarDatosPaso(step) {
         case 1:
             formData.nombre = document.getElementById('nombre').value.trim();
             formData.fechaNacimiento = document.getElementById('fechaNacimiento').value;
-            formData.genero = document.querySelector('input[name="genero"]:checked').value;
+            const generoChecked = document.querySelector('input[name="genero"]:checked');
+            formData.genero = generoChecked ? generoChecked.value : '';
             break;
             
         case 2:
@@ -344,7 +345,7 @@ function actualizarIMCPreview() {
 // MOSTRAR RESUMEN
 // =========================================
 
-function mostrarResumen() {
+async function mostrarResumen() {
     // Información personal
     document.getElementById('summaryNombre').textContent = formData.nombre;
     
