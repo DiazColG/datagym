@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a DataGym - Configuración de Perfil</title>
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="onboarding-container">
+        <!-- Header -->
+        <header class="onboarding-header">
+            <div class="logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>DataGym</span>
+            </div>
+            <div class="progress-indicator">
+                <div class="step-dot active" data-step="1"></div>
+                <div class="step-line"></div>
+                <div class="step-dot" data-step="2"></div>
+                <div class="step-line"></div>
+                <div class="step-dot" data-step="3"></div>
+                <div class="step-line"></div>
+                <div class="step-dot" data-step="4"></div>
+            </div>
+        </header>
+
+        <!-- Wizard Container -->
+        <main class="wizard-container">
+            
+            <!-- PASO 1: Información Personal -->
+            <section class="wizard-step active" id="step1">
+                <div class="step-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2>Información Personal</h2>
+                <p class="step-description">Cuéntanos un poco sobre ti</p>
+                
+                <form class="wizard-form">
+                    <div class="form-group">
+                        <label for="nombre">
+                            <i class="fas fa-id-card"></i> Nombre Completo
+                        </label>
+                        <input 
+                            type="text" 
+                            id="nombre" 
+                            required 
+                            placeholder="Ej: Juan Pérez"
+                            autocomplete="name"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fechaNacimiento">
+                            <i class="fas fa-calendar"></i> Fecha de Nacimiento
+                        </label>
+                        <input 
+                            type="date" 
+                            id="fechaNacimiento" 
+                            required
+                            max=""
+                        >
+                        <small class="edad-display"></small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-venus-mars"></i> Género
+                        </label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="genero" value="masculino" required>
+                                <span class="radio-custom">
+                                    <i class="fas fa-mars"></i>
+                                    Masculino
+                                </span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="genero" value="femenino" required>
+                                <span class="radio-custom">
+                                    <i class="fas fa-venus"></i>
+                                    Femenino
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="wizard-actions">
+                    <button class="btn btn-primary" onclick="nextStep(2)">
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PASO 2: Datos Físicos -->
+            <section class="wizard-step" id="step2">
+                <div class="step-icon">
+                    <i class="fas fa-weight-scale"></i>
+                </div>
+                <h2>Datos Físicos</h2>
+                <p class="step-description">Información sobre tu cuerpo</p>
+                
+                <form class="wizard-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="altura">
+                                <i class="fas fa-ruler-vertical"></i> Altura (cm)
+                            </label>
+                            <input 
+                                type="number" 
+                                id="altura" 
+                                required 
+                                min="100" 
+                                max="250" 
+                                step="1"
+                                placeholder="170"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pesoActual">
+                                <i class="fas fa-weight-scale"></i> Peso Actual (kg)
+                            </label>
+                            <input 
+                                type="number" 
+                                id="pesoActual" 
+                                required 
+                                min="30" 
+                                max="300" 
+                                step="0.1"
+                                placeholder="70"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pesoObjetivo">
+                            <i class="fas fa-bullseye"></i> Peso Objetivo (kg)
+                        </label>
+                        <input 
+                            type="number" 
+                            id="pesoObjetivo" 
+                            required 
+                            min="30" 
+                            max="300" 
+                            step="0.1"
+                            placeholder="65"
+                        >
+                    </div>
+                    
+                    <!-- IMC Preview -->
+                    <div class="imc-preview" id="imcPreview" style="display: none;">
+                        <div class="imc-badge">
+                            <strong>Tu IMC:</strong> <span id="imcValor">0</span>
+                        </div>
+                        <div class="imc-categoria" id="imcCategoria">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Calculando...</span>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" onclick="previousStep(1)">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button class="btn btn-primary" onclick="nextStep(3)">
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PASO 3: Actividad y Objetivos -->
+            <section class="wizard-step" id="step3">
+                <div class="step-icon">
+                    <i class="fas fa-running"></i>
+                </div>
+                <h2>Actividad y Objetivos</h2>
+                <p class="step-description">Define tu nivel de actividad y metas</p>
+                
+                <form class="wizard-form">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-heartbeat"></i> Nivel de Actividad Física
+                        </label>
+                        <div class="select-cards">
+                            <label class="select-card">
+                                <input type="radio" name="nivelActividad" value="sedentario" required>
+                                <div class="card-content">
+                                    <i class="fas fa-couch"></i>
+                                    <h4>Sedentario</h4>
+                                    <p>Poco o ningún ejercicio</p>
+                                </div>
+                            </label>
+                            
+                            <label class="select-card">
+                                <input type="radio" name="nivelActividad" value="ligero" required>
+                                <div class="card-content">
+                                    <i class="fas fa-walking"></i>
+                                    <h4>Ligero</h4>
+                                    <p>Ejercicio 1-3 días/semana</p>
+                                </div>
+                            </label>
+                            
+                            <label class="select-card">
+                                <input type="radio" name="nivelActividad" value="moderado" required>
+                                <div class="card-content">
+                                    <i class="fas fa-person-running"></i>
+                                    <h4>Moderado</h4>
+                                    <p>Ejercicio 3-5 días/semana</p>
+                                </div>
+                            </label>
+                            
+                            <label class="select-card">
+                                <input type="radio" name="nivelActividad" value="activo" required>
+                                <div class="card-content">
+                                    <i class="fas fa-running"></i>
+                                    <h4>Activo</h4>
+                                    <p>Ejercicio 6-7 días/semana</p>
+                                </div>
+                            </label>
+                            
+                            <label class="select-card">
+                                <input type="radio" name="nivelActividad" value="muyActivo" required>
+                                <div class="card-content">
+                                    <i class="fas fa-fire"></i>
+                                    <h4>Muy Activo</h4>
+                                    <p>Ejercicio intenso diario</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-bullseye"></i> Objetivo Principal
+                        </label>
+                        <div class="select-cards objetivo-cards">
+                            <label class="select-card">
+                                <input type="radio" name="objetivoPrincipal" value="perdida" required>
+                                <div class="card-content">
+                                    <i class="fas fa-arrow-down"></i>
+                                    <h4>Perder Peso</h4>
+                                    <p>Déficit calórico de ~500 kcal/día</p>
+                                </div>
+                            </label>
+                            
+                            <label class="select-card">
+                                <input type="radio" name="objetivoPrincipal" value="mantenimiento" required>
+                                <div class="card-content">
+                                    <i class="fas fa-balance-scale"></i>
+                                    <h4>Mantener Peso</h4>
+                                    <p>Calorías de mantenimiento</p>
+                                </div>
+                            </label>
+                            
+                            <label class="select-card">
+                                <input type="radio" name="objetivoPrincipal" value="ganancia" required>
+                                <div class="card-content">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <h4>Ganar Peso</h4>
+                                    <p>Superávit calórico de ~500 kcal/día</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" onclick="previousStep(2)">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button class="btn btn-primary" onclick="nextStep(4)">
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PASO 4: Resumen y Confirmación -->
+            <section class="wizard-step" id="step4">
+                <div class="step-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Resumen de tu Perfil</h2>
+                <p class="step-description">Confirma que todo esté correcto</p>
+                
+                <div class="summary-container">
+                    <!-- Información Personal -->
+                    <div class="summary-section">
+                        <h3><i class="fas fa-user"></i> Información Personal</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <span class="label">Nombre:</span>
+                                <span class="value" id="summaryNombre">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Edad:</span>
+                                <span class="value" id="summaryEdad">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Género:</span>
+                                <span class="value" id="summaryGenero">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Datos Físicos -->
+                    <div class="summary-section">
+                        <h3><i class="fas fa-weight-scale"></i> Datos Físicos</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <span class="label">Altura:</span>
+                                <span class="value" id="summaryAltura">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Peso Actual:</span>
+                                <span class="value" id="summaryPesoActual">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Peso Objetivo:</span>
+                                <span class="value" id="summaryPesoObjetivo">-</span>
+                            </div>
+                            <div class="summary-item highlight">
+                                <span class="label">IMC:</span>
+                                <span class="value" id="summaryIMC">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Objetivos Nutricionales -->
+                    <div class="summary-section highlight-section">
+                        <h3><i class="fas fa-bullseye"></i> Tus Objetivos Diarios</h3>
+                        <div class="summary-cards">
+                            <div class="summary-card">
+                                <i class="fas fa-fire"></i>
+                                <div>
+                                    <strong id="summaryCalorias">0</strong>
+                                    <span>kcal/día</span>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <i class="fas fa-drumstick-bite"></i>
+                                <div>
+                                    <strong id="summaryProteinas">0</strong>
+                                    <span>g proteínas</span>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <i class="fas fa-glass-water"></i>
+                                <div>
+                                    <strong id="summaryAgua">0</strong>
+                                    <span>vasos de agua</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información adicional -->
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Estos objetivos se han calculado profesionalmente usando la ecuación Mifflin-St Jeor 
+                        y se ajustan a tu nivel de actividad y meta personal.</p>
+                    </div>
+                </div>
+                
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" onclick="previousStep(3)">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button class="btn btn-success" id="btnFinalizar">
+                        <i class="fas fa-check"></i> Confirmar y Comenzar
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="spinner"></div>
+            <p>Guardando tu perfil...</p>
+        </div>
+    </div>
+
+    <script type="module" src="onboarding.js"></script>
+</body>
+</html>
