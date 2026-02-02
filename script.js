@@ -25,12 +25,16 @@ import {
     escucharAguaDelDia
 } from './firestore.js';
 
+// Importar módulos del sistema de perfiles
+import { obtenerPerfilCompleto, obtenerObjetivosDiarios, obtenerProgresoObjetivoPeso } from './profile-manager.js';
+
 // =========================================
 // VARIABLES GLOBALES
 // =========================================
 
 let currentUser = null;
 let userId = null;
+let perfilUsuario = null; // Nuevo: perfil del usuario
 let unsubscribeEjercicios = null;
 let unsubscribePeso = null;
 let unsubscribeAgua = null;
@@ -53,8 +57,24 @@ document.addEventListener('DOMContentLoaded', function() {
             userId = user.uid;
             console.log('Usuario autenticado:', user.email);
             
+            // Cargar perfil del usuario
+            try {
+                perfilUsuario = await obtenerPerfilCompleto(userId);
+                console.log('Perfil cargado:', perfilUsuario);
+            } catch (error) {
+                console.error('Error al cargar perfil:', error);
+            }
+            
             // Mostrar información del usuario
             mostrarInfoUsuario(user);
+            
+            // Cargar modal Mi Cuenta
+            await cargarModalMiCuenta();
+            
+            // Mostrar objetivos personalizados si tiene perfil
+            if (perfilUsuario && perfilUsuario.perfilCompleto) {
+                mostrarObjetivosPersonalizados();
+            }
             
             // Migrar datos locales a Firestore (solo una vez)
             await migrarDatosLocalesAFirestore();
@@ -105,6 +125,160 @@ function mostrarInfoUsuario(user) {
         userName.textContent = user.displayName || user.email;
     }
 }
+
+// =========================================
+// CARGAR MODAL MI CUENTA
+// =========================================
+
+async function cargarModalMiCuenta() {
+    try {
+        // Cargar el contenido del modal desde mi-cuenta.html
+        const response = await fetch('mi-cuenta.html');
+        const html = await response.text();
+        
+        // Crear un div temporal para parsear el HTML
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        
+        // Extraer solo el modal (sin html, head, body tags)
+        const modalContent = temp.querySelector('.modal-overlay');
+        
+        // Insertar en el contenedor
+        const container = document.getElementById('modalMiCuentaContainer');
+        if (container && modalContent) {
+            container.appendChild(modalContent);
+            
+            // Cargar el script del modal
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = 'mi-cuenta.js';
+            document.body.appendChild(script);
+            
+            console.log('✅ Modal Mi Cuenta cargado');
+            
+            // Configurar botón para abrir modal
+            configurarBotonMiCuenta();
+        }
+    } catch (error) {
+        console.error('❌ Error al cargar modal Mi Cuenta:', error);
+    }
+}
+
+function configurarBotonMiCuenta() {
+    const btnMiCuenta = document.getElementById('btnMiCuenta');
+    if (btnMiCuenta) {
+        btnMiCuenta.addEventListener('click', () => {
+            // Llamar a la función global del modal
+            if (window.abrirModalCuenta) {
+                window.abrirModalCuenta();
+            }
+        });
+    }
+}
+
+// =========================================
+// MOSTRAR OBJETIVOS PERSONALIZADOS
+// =========================================
+
+function mostrarObjetivosPersonalizados() {
+    if (!perfilUsuario || !perfilUsuario.perfilCompleto) {
+        return;
+    }
+    
+    // Mostrar sección de objetivos
+    const seccionObjetivos = document.getElementById('objetivosPersonalizados');
+    if (seccionObjetivos) {
+        seccionObjetivos.style.display = 'block';
+    }
+    
+    // Obtener objetivos diarios
+    const objetivos = obtenerObjetivosDiarios(perfilUsuario);
+    
+    // Actualizar valores en el dashboard
+    const caloriasEl = document.getElementById('objDashCalorias');
+    const proteinasEl = document.getElementById('objDashProteinas');
+    const aguaEl = document.getElementById('objDashAgua');
+    
+    if (caloriasEl) caloriasEl.textContent = objetivos.calorias;
+    if (proteinasEl) proteinasEl.textContent = objetivos.proteinas;
+    if (aguaEl && objetivos.agua) aguaEl.textContent = objetivos.agua.vasos;
+    
+    // Mostrar progreso hacia objetivo de peso
+    mostrarProgresoObjetivoPeso();
+    
+    // Personalizar el mensaje de bienvenida con el nombre del perfil
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    if (welcomeMessage && perfilUsuario.nombre) {
+        welcomeMessage.innerHTML = `<i class="fas fa-dumbbell"></i> Bienvenido, ${perfilUsuario.nombre}`;
+    }
+    
+    // Actualizar meta de agua en la sección de agua
+    actualizarMetaAgua();
+}
+
+function mostrarProgresoObjetivoPeso() {
+    if (!perfilUsuario) return;
+    
+    const progreso = obtenerProgresoObjetivoPeso(perfilUsuario);
+    if (!progreso) return;
+    
+    const seccionProgreso = document.getElementById('progresoObjetivoPeso');
+    if (seccionProgreso) {
+        seccionProgreso.style.display = 'block';
+        
+        const pesoActualEl = document.getElementById('dashPesoActual');
+        const pesoObjetivoEl = document.getElementById('dashPesoObjetivo');
+        const diferenciaEl = document.getElementById('dashDiferencia');
+        
+        if (pesoActualEl) pesoActualEl.textContent = `${progreso.pesoActual} kg`;
+        if (pesoObjetivoEl) pesoObjetivoEl.textContent = `${progreso.pesoObjetivo} kg`;
+        
+        if (diferenciaEl) {
+            const texto = progreso.direccion === 'mantener' 
+                ? 'Peso en objetivo' 
+                : `${progreso.diferencia.toFixed(1)} kg a ${progreso.direccion}`;
+            diferenciaEl.textContent = texto;
+        }
+    }
+}
+
+function actualizarMetaAgua() {
+    if (!perfilUsuario || !perfilUsuario.aguaObjetivo) return;
+    
+    // Actualizar el texto del objetivo de agua
+    const subtitleAgua = document.querySelector('#agua .subtitle');
+    if (subtitleAgua) {
+        const vasos = perfilUsuario.aguaObjetivo.vasos;
+        const litros = perfilUsuario.aguaObjetivo.litros;
+        subtitleAgua.textContent = `Mantente hidratado - Meta: ${vasos} vasos (${litros} litros)`;
+    }
+    
+    // Actualizar el texto del contador de agua
+    const aguaTexto = document.getElementById('aguaTexto');
+    if (aguaTexto) {
+        const textoActual = aguaTexto.textContent;
+        // Verificar si el texto tiene el formato esperado con '/'
+        if (textoActual && textoActual.includes('/')) {
+            const actual = textoActual.split('/')[0].trim();
+            aguaTexto.textContent = `${actual}/${perfilUsuario.aguaObjetivo.vasos}`;
+        } else {
+            // Si no tiene el formato, establecer el formato inicial
+            aguaTexto.textContent = `0/${perfilUsuario.aguaObjetivo.vasos}`;
+        }
+    }
+}
+
+// Escuchar actualizaciones del perfil
+window.addEventListener('perfilActualizado', async (event) => {
+    console.log('Perfil actualizado, recargando datos...');
+    perfilUsuario = event.detail;
+    mostrarObjetivosPersonalizados();
+    
+    // Actualizar mensaje de bienvenida
+    if (currentUser) {
+        mostrarInfoUsuario(currentUser);
+    }
+});
 
 function configurarLogout() {
     const logoutBtn = document.getElementById('btnLogout');

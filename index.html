@@ -8,6 +8,7 @@
     
     <!-- Estilos -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="mi-cuenta.css">
     
     <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,13 +18,26 @@
     
     <!-- Script de protección de rutas -->
     <script type="module">
-        import { onAuthChange } from './auth.js';
+        import { onAuthChange, necesitaOnboarding, crearPerfilInicialUsuario } from './auth.js';
         
         // Verificar autenticación antes de cargar la app
-        onAuthChange((user) => {
+        onAuthChange(async (user) => {
             if (!user) {
                 // Si no está autenticado, redirigir a auth.html
                 window.location.href = 'auth.html';
+            } else {
+                // Verificar si necesita completar el onboarding
+                try {
+                    const necesitaConfig = await necesitaOnboarding(user.uid);
+                    if (necesitaConfig) {
+                        // Crear perfil inicial si es nuevo usuario
+                        await crearPerfilInicialUsuario(user);
+                        // Redirigir a onboarding
+                        window.location.href = 'onboarding.html';
+                    }
+                } catch (error) {
+                    console.error('Error al verificar onboarding:', error);
+                }
             }
         });
     </script>
@@ -82,6 +96,9 @@
             
             <!-- Información del usuario -->
             <div class="user-info" id="userInfo" style="display: none;">
+                <button id="btnMiCuenta" class="btn-mi-cuenta" title="Mi Cuenta">
+                    <i class="fas fa-user-circle"></i>
+                </button>
                 <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
                 <span id="userName" class="user-name"></span>
                 <button id="btnLogout" class="btn-logout" title="Cerrar sesión">
@@ -147,6 +164,66 @@
                         <h3>Tiempo Total</h3>
                         <p class="card-value" id="tiempoHoy">0</p>
                         <p class="card-label">minutos</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Objetivos Personalizados (solo si tiene perfil completo) -->
+            <div id="objetivosPersonalizados" style="display: none;" class="objetivos-dashboard">
+                <h2><i class="fas fa-bullseye"></i> Tus Objetivos Diarios</h2>
+                <div class="objetivos-grid">
+                    <div class="objetivo-card">
+                        <div class="objetivo-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="objetivo-info">
+                            <h4>Meta de Calorías</h4>
+                            <p class="objetivo-value" id="objDashCalorias">2000</p>
+                            <p class="objetivo-label">kcal/día</p>
+                        </div>
+                    </div>
+                    
+                    <div class="objetivo-card">
+                        <div class="objetivo-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <i class="fas fa-drumstick-bite"></i>
+                        </div>
+                        <div class="objetivo-info">
+                            <h4>Proteínas</h4>
+                            <p class="objetivo-value" id="objDashProteinas">150</p>
+                            <p class="objetivo-label">gramos/día</p>
+                        </div>
+                    </div>
+                    
+                    <div class="objetivo-card">
+                        <div class="objetivo-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                            <i class="fas fa-glass-water"></i>
+                        </div>
+                        <div class="objetivo-info">
+                            <h4>Hidratación</h4>
+                            <p class="objetivo-value" id="objDashAgua">8</p>
+                            <p class="objetivo-label">vasos/día</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progreso hacia objetivo de peso -->
+                <div class="progreso-peso-dashboard" id="progresoObjetivoPeso" style="display: none;">
+                    <div class="progreso-header">
+                        <h3><i class="fas fa-chart-line"></i> Progreso hacia tu Objetivo</h3>
+                    </div>
+                    <div class="progreso-content">
+                        <div class="progreso-item">
+                            <span class="label">Peso Actual:</span>
+                            <span class="value" id="dashPesoActual">70 kg</span>
+                        </div>
+                        <div class="progreso-item">
+                            <span class="label">Peso Objetivo:</span>
+                            <span class="value" id="dashPesoObjetivo">65 kg</span>
+                        </div>
+                        <div class="progreso-item highlight">
+                            <span class="label">Por lograr:</span>
+                            <span class="value" id="dashDiferencia">5 kg</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -658,6 +735,9 @@
             </p>
         </div>
     </footer>
+
+    <!-- Modal Mi Cuenta (contenido insertado dinámicamente) -->
+    <div id="modalMiCuentaContainer"></div>
 
     <!-- Script principal -->
     <script type="module" src="script.js"></script>
