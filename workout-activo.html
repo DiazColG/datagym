@@ -150,7 +150,7 @@
     <script type="module">
         import { auth } from './firebase-config.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-        import { iniciarWorkout, completarSerie, finalizarWorkout, obtenerWorkout } from './workout-manager.js';
+        import { iniciarWorkout, guardarSerie, completarWorkout, obtenerWorkoutActivo } from './workout-manager.js';
         import { obtenerRutina, incrementarVecesCompletada } from './rutinas-manager.js';
         import { EXERCISES_DB } from './exercises-db.js';
 
@@ -186,7 +186,10 @@
                     workoutId = await iniciarWorkout(userActual.uid, null, { nombre: 'Workout Rápido', ejercicios: [] });
                 }
 
-                workoutActual = await obtenerWorkout(userActual.uid, workoutId);
+                workoutActual = await obtenerWorkoutActivo(userActual.uid);
+                if (!workoutActual) {
+                    throw new Error('No se pudo cargar el workout activo');
+                }
                 tiempoInicio = new Date();
                 
                 configurarInterfaz();
@@ -328,12 +331,15 @@
             }
 
             try {
-                await completarSerie(userActual.uid, workoutId, ejercicioActualIdx, serieActualIdx, {
+                const ejercicioActual = workoutActual.ejercicios[ejercicioActualIdx];
+                const setNumber = serieActualIdx + 1;
+                
+                await guardarSerie(userActual.uid, workoutId, ejercicioActual.exerciseId, setNumber, {
                     reps: repsActuales,
                     peso: pesoActual
                 });
 
-                workoutActual = await obtenerWorkout(userActual.uid, workoutId);
+                workoutActual = await obtenerWorkoutActivo(userActual.uid);
                 
                 const ejercicio = workoutActual.ejercicios[ejercicioActualIdx];
                 const siguienteSerieIncompleta = ejercicio.series.findIndex((s, idx) => idx > serieActualIdx && !s.completado);
@@ -414,7 +420,7 @@
         async function confirmarFinalizacion() {
             try {
                 const notas = document.getElementById('workoutNotes').value;
-                await finalizarWorkout(userActual.uid, workoutId, notas);
+                await completarWorkout(userActual.uid, workoutId, { notas });
                 
                 if (rutinaActual) {
                     await incrementarVecesCompletada(userActual.uid, localStorage.getItem('selectedRoutineId'));
