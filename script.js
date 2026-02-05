@@ -28,6 +28,9 @@ import {
 // Importar módulos del sistema de perfiles
 import { obtenerPerfilCompleto, obtenerObjetivosDiarios, obtenerProgresoObjetivoPeso } from './profile-manager.js';
 
+// Importar módulos del sistema de workouts
+import { obtenerEstadisticasSemanales } from './workout-manager.js';
+
 // =========================================
 // VARIABLES GLOBALES
 // =========================================
@@ -214,6 +217,9 @@ function mostrarObjetivosPersonalizados() {
     
     // Actualizar meta de agua en la sección de agua
     actualizarMetaAgua();
+    
+    // Mostrar estadísticas de workouts
+    mostrarEstadisticasWorkouts();
 }
 
 function mostrarProgresoObjetivoPeso() {
@@ -1511,3 +1517,68 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// =========================================
+// ESTADÍSTICAS DE WORKOUTS
+// =========================================
+
+async function mostrarEstadisticasWorkouts() {
+    try {
+        if (!userId) return;
+        
+        const stats = await obtenerEstadisticasSemanales(userId);
+        
+        // Buscar el elemento del dashboard donde mostrar las estadísticas
+        const dashboardCards = document.querySelector('.dashboard-cards');
+        if (!dashboardCards) return;
+        
+        // Verificar si ya existe la tarjeta de workouts
+        let workoutCard = document.getElementById('workout-stats-card');
+        if (!workoutCard) {
+            // Crear tarjeta de estadísticas de workouts
+            workoutCard = document.createElement('div');
+            workoutCard.id = 'workout-stats-card';
+            workoutCard.className = 'stat-card';
+            workoutCard.style.cursor = 'pointer';
+            workoutCard.onclick = () => window.location.href = 'entrenar.html';
+            
+            dashboardCards.insertBefore(workoutCard, dashboardCards.firstChild);
+        }
+        
+        // Actualizar contenido
+        workoutCard.innerHTML = `
+            <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="stat-info">
+                <h3>${stats.totalWorkouts || 0}</h3>
+                <p>Entrenamientos esta semana</p>
+            </div>
+            <div class="stat-details" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5e7eb;">
+                <small style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>💪 Volumen:</span>
+                    <strong>${formatearVolumen(stats.volumenTotal || 0)}</strong>
+                </small>
+                <small style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>🔥 Calorías:</span>
+                    <strong>${stats.caloriasTotal || 0} kcal</strong>
+                </small>
+                <small style="display: flex; justify-content: space-between;">
+                    <span>⏱️ Tiempo:</span>
+                    <strong>${stats.duracionTotal || 0} min</strong>
+                </small>
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error('Error al mostrar estadísticas de workouts:', error);
+    }
+}
+
+function formatearVolumen(volumen) {
+    if (volumen >= 1000) {
+        return `${(volumen / 1000).toFixed(1)}k kg`;
+    }
+    return `${volumen} kg`;
+}
+
