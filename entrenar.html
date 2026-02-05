@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenar - DataGym</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="entrenar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-dumbbell"></i>
+                <span>DataGym</span>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="entrenar.html" class="nav-link active"><i class="fas fa-fire"></i> Entrenar</a></li>
+                <li><a href="#" class="nav-link" id="navMiCuenta"><i class="fas fa-user-circle"></i> Mi Cuenta</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div class="training-header">
+            <h1><i class="fas fa-fire"></i> Mis Entrenamientos</h1>
+            <p class="subtitle">Selecciona una rutina o inicia un workout rápido</p>
+        </div>
+
+        <div class="action-buttons-row">
+            <button class="btn-quick-workout" id="btnQuickWorkout">
+                <i class="fas fa-bolt"></i>
+                <span>Workout Rápido</span>
+                <small>Sin rutina predefinida</small>
+            </button>
+            <button class="btn-new-routine" id="btnNewRoutine">
+                <i class="fas fa-plus-circle"></i>
+                <span>Nueva Rutina</span>
+                <small>Crear y guardar</small>
+            </button>
+        </div>
+
+        <div class="weekly-overview" id="weeklyOverview">
+            <h3><i class="fas fa-calendar-week"></i> Esta Semana</h3>
+            <div class="week-stats">
+                <div class="week-stat">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong id="workoutsThisWeek">0</strong>
+                        <span>Entrenamientos</span>
+                    </div>
+                </div>
+                <div class="week-stat">
+                    <i class="fas fa-fire"></i>
+                    <div>
+                        <strong id="caloriesThisWeek">0</strong>
+                        <span>Calorías</span>
+                    </div>
+                </div>
+                <div class="week-stat">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <strong id="minutesThisWeek">0</strong>
+                        <span>Minutos</span>
+                    </div>
+                </div>
+            </div>
+            <div class="week-calendar" id="weekCalendar"></div>
+        </div>
+
+        <div class="routines-section">
+            <div class="section-title">
+                <h2><i class="fas fa-list-ul"></i> Mis Rutinas</h2>
+                <div class="routine-filters">
+                    <button class="filter-btn active" data-filter="all">Todas</button>
+                    <button class="filter-btn" data-filter="favorites">Favoritas</button>
+                </div>
+            </div>
+
+            <div class="routines-container" id="routinesContainer">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Cargando rutinas...</p>
+                </div>
+            </div>
+
+            <div class="empty-routines" id="emptyRoutines" style="display: none;">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No tienes rutinas guardadas</h3>
+                <p>Crea tu primera rutina para empezar a entrenar de forma organizada</p>
+                <button class="btn btn-primary" id="btnCreateFirstRoutine">
+                    <i class="fas fa-plus"></i> Crear mi primera rutina
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2024 DataGym. Desarrollado con <i class="fas fa-heart"></i> para atletas.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="entrenar.js"></script>
+</body>
+</html>
