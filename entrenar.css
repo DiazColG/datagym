@@ -1,0 +1,528 @@
+/* ========================================
+   PÁGINA DE ENTRENAR - ESTILOS ÚNICOS
+   ======================================== */
+
+.training-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.training-header h1 {
+    color: var(--primary-blue);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.training-header h1 i {
+    color: var(--warning-orange);
+}
+
+/* ========================================
+   BOTONES DE ACCIÓN PRINCIPALES
+   ======================================== */
+
+.action-buttons-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.btn-quick-workout,
+.btn-new-routine {
+    background: white;
+    border: 3px solid var(--gray-300);
+    border-radius: 1rem;
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.btn-quick-workout {
+    border-color: var(--warning-orange);
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+}
+
+.btn-quick-workout:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    border-color: var(--warning-orange);
+}
+
+.btn-quick-workout i {
+    font-size: 3rem;
+    color: var(--warning-orange);
+}
+
+.btn-new-routine {
+    border-color: var(--primary-blue-light);
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+.btn-new-routine:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    border-color: var(--primary-blue);
+}
+
+.btn-new-routine i {
+    font-size: 3rem;
+    color: var(--primary-blue-light);
+}
+
+.btn-quick-workout span,
+.btn-new-routine span {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+.btn-quick-workout small,
+.btn-new-routine small {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    font-weight: 400;
+}
+
+/* ========================================
+   RESUMEN SEMANAL
+   ======================================== */
+
+.weekly-overview {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2.5rem;
+}
+
+.weekly-overview h3 {
+    color: var(--primary-blue);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.week-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.week-stat {
+    background: var(--gray-50);
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.week-stat i {
+    font-size: 2rem;
+    color: var(--primary-blue-light);
+}
+
+.week-stat div {
+    display: flex;
+    flex-direction: column;
+}
+
+.week-stat strong {
+    font-size: 1.75rem;
+    color: var(--gray-900);
+    font-weight: 700;
+}
+
+.week-stat span {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+}
+
+.week-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+}
+
+.calendar-day {
+    background: var(--gray-100);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.calendar-day.today {
+    border-color: var(--primary-blue-light);
+    background: #dbeafe;
+}
+
+.calendar-day.completed {
+    background: var(--success-green);
+    color: white;
+}
+
+.calendar-day.completed i {
+    color: white;
+}
+
+.calendar-day-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+}
+
+.calendar-day.completed .calendar-day-name {
+    color: white;
+}
+
+.calendar-day-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+.calendar-day.completed .calendar-day-number {
+    color: white;
+}
+
+.calendar-day i {
+    font-size: 1rem;
+    color: var(--success-green);
+    margin-top: 0.25rem;
+}
+
+/* ========================================
+   SECCIÓN DE RUTINAS
+   ======================================== */
+
+.routines-section {
+    margin-top: 2rem;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.section-title h2 {
+    color: var(--primary-blue);
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.routine-filters {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--gray-300);
+    background: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--gray-700);
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-blue-light);
+    color: var(--primary-blue-light);
+}
+
+.filter-btn.active {
+    background: var(--primary-blue-light);
+    color: white;
+    border-color: var(--primary-blue-light);
+}
+
+/* ========================================
+   CONTENEDOR DE RUTINAS
+   ======================================== */
+
+.routines-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.routine-card-wrapper {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.routine-card-wrapper:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+.routine-card-wrapper.favorite {
+    border-color: #fbbf24;
+}
+
+.routine-card-top {
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.routine-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.routine-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+}
+
+.favorite-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+.routine-card-content {
+    padding: 1.5rem;
+}
+
+.routine-description {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.routine-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--gray-700);
+    font-weight: 600;
+}
+
+.meta-item i {
+    color: var(--primary-blue-light);
+    font-size: 1rem;
+}
+
+.routine-stats {
+    background: var(--gray-50);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+}
+
+.stat-box {
+    text-align: center;
+}
+
+.stat-box strong {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--primary-blue);
+    font-weight: 700;
+}
+
+.stat-box span {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    text-transform: uppercase;
+}
+
+.routine-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+}
+
+.btn-start-routine {
+    background: var(--success-green);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-start-routine:hover {
+    background: #059669;
+    transform: scale(1.02);
+}
+
+.btn-edit-routine {
+    background: var(--gray-200);
+    color: var(--gray-700);
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+}
+
+.btn-edit-routine:hover {
+    background: var(--gray-300);
+}
+
+/* ========================================
+   ESTADO VACÍO
+   ======================================== */
+
+.empty-routines {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.empty-routines i {
+    font-size: 5rem;
+    color: var(--gray-400);
+    margin-bottom: 1rem;
+}
+
+.empty-routines h3 {
+    color: var(--gray-700);
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.empty-routines p {
+    color: var(--gray-600);
+    margin-bottom: 2rem;
+}
+
+/* ========================================
+   RESPONSIVE MÓVIL
+   ======================================== */
+
+@media (max-width: 767px) {
+    .training-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .action-buttons-row {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-quick-workout,
+    .btn-new-routine {
+        padding: 1.5rem;
+    }
+
+    .btn-quick-workout i,
+    .btn-new-routine i {
+        font-size: 2.5rem;
+    }
+
+    .week-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .week-calendar {
+        gap: 0.25rem;
+    }
+
+    .calendar-day {
+        padding: 0.5rem;
+    }
+
+    .calendar-day-name {
+        font-size: 0.65rem;
+    }
+
+    .calendar-day-number {
+        font-size: 1rem;
+    }
+
+    .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .routines-container {
+        grid-template-columns: 1fr;
+    }
+
+    .routine-meta {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   ESTADO DE CARGA
+   ======================================== */
+
+.loading-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--gray-500);
+}
+
+.loading-state .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--gray-200);
+    border-top-color: var(--primary-blue-light);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
