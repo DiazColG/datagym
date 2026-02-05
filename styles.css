@@ -1436,3 +1436,146 @@ body {
     }
 }
 
+
+/* ===================================
+   SISTEMA DE WORKOUTS - ESTILOS GLOBALES
+   =================================== */
+
+:root {
+    /* Colores para workout system */
+    --workout-active: #3b82f6;
+    --workout-completed: #10b981;
+    --workout-pending: #e5e7eb;
+    --workout-bg: #f3f4f6;
+    --record-gold: #f59e0b;
+}
+
+/* Botones táctiles grandes para gimnasio */
+.btn-gym {
+    min-height: 60px;
+    min-width: 60px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-gym:active {
+    transform: scale(0.95);
+}
+
+.btn-gym-primary {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.btn-gym-primary:hover {
+    background: var(--primary-blue-light);
+}
+
+.btn-gym-success {
+    background: var(--success-green);
+    color: white;
+}
+
+.btn-gym-success:hover {
+    background: #059669;
+}
+
+/* Cards de rutinas */
+.routine-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.routine-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* Estados de series */
+.serie-completed {
+    background: var(--workout-completed);
+    color: white;
+}
+
+.serie-active {
+    background: var(--workout-active);
+    color: white;
+}
+
+.serie-pending {
+    background: var(--workout-pending);
+    color: var(--gray-600);
+}
+
+/* Badge de récord */
+.badge-record {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--record-gold);
+    color: white;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Animación de confetti para récords */
+@keyframes confetti {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.confetti-celebration {
+    animation: confetti 2s ease-out;
+}
+
+/* Utilidades de workout */
+.workout-timer {
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-blue);
+}
+
+.workout-progress-bar {
+    height: 8px;
+    background: var(--gray-200);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.workout-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--success-green) 100%);
+    transition: width 0.3s ease;
+}
+
+/* Responsive para workout system */
+@media (max-width: 768px) {
+    .btn-gym {
+        min-height: 56px;
+        min-width: 56px;
+        font-size: 1.1rem;
+    }
+    
+    .workout-timer {
+        font-size: 1.5rem;
+    }
+}

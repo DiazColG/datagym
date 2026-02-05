@@ -62,7 +62,27 @@
 - Consumo de agua semanal
 - Visualizaciones con Chart.js
 
-### 📋 8. Rutinas Predefinidas
+### 🏋️ 8. Sistema de Rutinas y Workouts (NUEVO)
+Sistema profesional de tracking de entrenamientos:
+- **Base de datos de 50 ejercicios** categorizados por grupo muscular
+- **Crear rutinas personalizadas** con ejercicios, series, reps y descansos
+- **Tracking en tiempo real** con interfaz táctil para el gimnasio
+- **Comparación automática** con entrenamientos anteriores
+- **Detección de récords personales** (peso máximo, volumen, 1RM)
+- **Sugerencias inteligentes** de peso basadas en progreso
+- **Historial completo** de workouts y estadísticas
+- **Gráficos de progreso** por ejercicio
+
+#### Características destacadas:
+- ✅ 50 ejercicios esenciales (pecho, espalda, piernas, hombros, brazos, core, fullbody)
+- ✅ Interfaz optimizada para uso en el gimnasio (botones grandes, alto contraste)
+- ✅ Cálculo automático de 1RM (fórmula Epley)
+- ✅ Tracking de volumen total y calorías estimadas
+- ✅ Celebración visual de nuevos récords
+- ✅ Sistema de comparación: "¡Subiste 5kg desde la última vez!"
+- ✅ Modo offline con sincronización automática
+
+### 📋 9. Rutinas Predefinidas
 5 rutinas listas para usar:
 - **Cardio Intenso** (30 min, 300 kcal)
 - **Entrenamiento de Fuerza** (45 min, 350 kcal)
@@ -70,7 +90,7 @@
 - **HIIT** (20 min, 250 kcal)
 - **Yoga Completo** (40 min, 150 kcal)
 
-### ⏱️ 9. Timer Configurable
+### ⏱️ 10. Timer Configurable
 - Temporizador para ejercicios
 - Configuración en minutos y segundos
 - Controles: Iniciar, Pausar, Reiniciar
@@ -265,6 +285,30 @@ datagym/
 ├── firebase-config.js     # Configuración de Firebase
 ├── auth.js                # Módulo de autenticación
 ├── firestore.js           # Módulo de base de datos Firestore
+│
+├── // SISTEMA DE WORKOUTS (NUEVO)
+├── entrenar.html          # Página principal de entrenamientos
+├── entrenar.css           # Estilos de la sección entrenar
+├── entrenar.js            # Lógica de entrenamientos
+├── crear-rutina.html      # Crear/editar rutinas
+├── workout-activo.html    # Tracking de workout en tiempo real
+├── workout-activo.css     # Estilos para workout activo
+├── exercises-db.js        # Base de datos de 50 ejercicios
+├── rutinas-manager.js     # Gestión de rutinas (CRUD)
+├── workout-manager.js     # Gestión de workouts activos
+├── records-manager.js     # Sistema de récords personales
+├── workout-calculator.js  # Cálculos (1RM, volumen, calorías)
+│
+├── // SISTEMA DE PERFILES
+├── mi-cuenta.html         # Página de perfil de usuario
+├── mi-cuenta.css          # Estilos de perfil
+├── mi-cuenta.js           # Lógica de perfil
+├── onboarding.html        # Primera configuración
+├── onboarding.css         # Estilos de onboarding
+├── onboarding.js          # Lógica de onboarding
+├── profile-manager.js     # Gestión de perfiles
+├── profile-calculator.js  # Cálculos de TMB, TDEE, macros
+│
 ├── .env.example           # Template de variables de entorno
 ├── docs/
 │   └── firestore-schema.md # Documentación de estructura de datos
@@ -299,9 +343,12 @@ Esta aplicación está diseñada para:
 ## 🔮 Futuras Mejoras Posibles
 
 Ideas para extender la aplicación:
+- [x] Sistema de rutinas personalizadas ✅ **IMPLEMENTADO**
+- [x] Tracking de workouts en tiempo real ✅ **IMPLEMENTADO**
+- [x] Base de datos de ejercicios profesional ✅ **IMPLEMENTADO**
+- [x] Detección de récords personales ✅ **IMPLEMENTADO**
+- [x] Gráficos de progreso por ejercicio ✅ **IMPLEMENTADO**
 - [ ] Exportar/importar datos en JSON
-- [ ] Más rutinas predefinidas personalizables
-- [ ] Gráficos de progreso mensual/anual
 - [ ] Calculadora de calorías por alimento
 - [ ] Registro de horas de sueño
 - [ ] Integración con dispositivos wearables
@@ -309,6 +356,8 @@ Ideas para extender la aplicación:
 - [ ] Múltiples perfiles de usuario
 - [ ] Compartir progreso en redes sociales
 - [ ] Recordatorios y notificaciones
+- [ ] Planes de entrenamiento con IA
+- [ ] Comunidad y desafíos entre usuarios
 
 ## 🤝 Contribuir
 
