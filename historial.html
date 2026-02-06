@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial - DataGym</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="historial.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-dumbbell"></i>
+                <span>DataGym</span>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="entrenar.html" class="nav-link"><i class="fas fa-fire"></i> Entrenar</a></li>
+                <li><a href="historial.html" class="nav-link active"><i class="fas fa-history"></i> Historial</a></li>
+                <li><a href="#" class="nav-link" id="navMiCuenta"><i class="fas fa-user-circle"></i> Mi Cuenta</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="historial-header">
+            <h1><i class="fas fa-history"></i> Historial de Entrenamientos</h1>
+            <p class="subtitle">Revisa tu progreso y mejora continua</p>
+        </div>
+
+        <!-- Estadísticas Generales -->
+        <div class="stats-overview" id="statsOverview">
+            <div class="stat-card">
+                <i class="fas fa-calendar-check"></i>
+                <div class="stat-info">
+                    <strong id="totalWorkouts">0</strong>
+                    <span>Workouts completados</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-weight-hanging"></i>
+                <div class="stat-info">
+                    <strong id="totalVolumen">0</strong>
+                    <span>kg de volumen total</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-fire"></i>
+                <div class="stat-info">
+                    <strong id="totalCalorias">0</strong>
+                    <span>kcal quemadas</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <div class="stat-info">
+                    <strong id="totalTiempo">0</strong>
+                    <span>minutos entrenando</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label>
+                    <i class="fas fa-calendar"></i>
+                    Período
+                </label>
+                <select id="filterPeriodo" class="filter-select">
+                    <option value="7">Última semana</option>
+                    <option value="30" selected>Último mes</option>
+                    <option value="90">Últimos 3 meses</option>
+                    <option value="365">Último año</option>
+                    <option value="all">Todo el tiempo</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>
+                    <i class="fas fa-dumbbell"></i>
+                    Rutina
+                </label>
+                <select id="filterRutina" class="filter-select">
+                    <option value="all">Todas las rutinas</option>
+                    <!-- Se llenarán dinámicamente -->
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>
+                    <i class="fas fa-search"></i>
+                    Buscar ejercicio
+                </label>
+                <input type="text" id="searchEjercicio" class="filter-input" placeholder="Nombre del ejercicio...">
+            </div>
+
+            <button class="btn-reset-filters" id="btnResetFilters">
+                <i class="fas fa-refresh"></i>
+                Limpiar filtros
+            </button>
+        </div>
+
+        <!-- Tabs de visualización -->
+        <div class="view-tabs">
+            <button class="tab-btn active" data-view="lista">
+                <i class="fas fa-list"></i> Lista
+            </button>
+            <button class="tab-btn" data-view="graficos">
+                <i class="fas fa-chart-line"></i> Gráficos
+            </button>
+        </div>
+
+        <!-- Vista de Lista -->
+        <div class="view-content active" id="vistaLista">
+            <div class="workouts-list" id="workoutsList">
+                <!-- Se llenará dinámicamente -->
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No hay workouts para mostrar</h3>
+                <p>Ajusta los filtros o empieza a entrenar</p>
+                <a href="entrenar.html" class="btn btn-primary">
+                    <i class="fas fa-dumbbell"></i> Ir a Entrenar
+                </a>
+            </div>
+        </div>
+
+        <!-- Vista de Gráficos -->
+        <div class="view-content" id="vistaGraficos">
+            <!-- Selector de ejercicio para gráfico -->
+            <div class="chart-selector">
+                <label>
+                    <i class="fas fa-chart-line"></i>
+                    Ver progreso de:
+                </label>
+                <select id="ejercicioGrafico" class="filter-select">
+                    <option value="">Selecciona un ejercicio</option>
+                    <!-- Se llenará dinámicamente -->
+                </select>
+            </div>
+
+            <div class="charts-grid">
+                <!-- Gráfico de progreso por ejercicio -->
+                <div class="chart-card">
+                    <h3>Progreso de Peso</h3>
+                    <canvas id="chartPesoProgreso"></canvas>
+                </div>
+
+                <!-- Gráfico de volumen -->
+                <div class="chart-card">
+                    <h3>Volumen Total</h3>
+                    <canvas id="chartVolumen"></canvas>
+                </div>
+
+                <!-- Información de mejor serie -->
+                <div class="best-set-card" id="bestSetCard" style="display: none;">
+                    <div class="best-set-header">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Récord Personal</h3>
+                    </div>
+                    <div class="best-set-info">
+                        <div class="best-set-value">
+                            <strong id="bestPeso">0</strong> kg
+                            <span>×</span>
+                            <strong id="bestReps">0</strong> reps
+                        </div>
+                        <small id="bestFecha">-</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-exercise-selected" id="noExerciseSelected">
+                <i class="fas fa-chart-line"></i>
+                <p>Selecciona un ejercicio para ver su progreso</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2026 DataGym. Creado con <i class="fas fa-heart"></i> para tu salud.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="auth.js"></script>
+    <script type="module" src="historial.js"></script>
+</body>
+</html>

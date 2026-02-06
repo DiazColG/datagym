@@ -560,3 +560,131 @@ export async function obtenerEstadisticasSemanales(userId) {
         };
     }
 }
+
+// ================================================
+// PROGRESO POR EJERCICIO
+// ================================================
+
+/**
+ * Obtiene todos los workouts que contienen un ejercicio específico
+ * @param {string} userId - ID del usuario
+ * @param {string} exerciseId - ID del ejercicio
+ * @param {number} limite - Número máximo de workouts a retornar
+ * @returns {Promise<Array>} - Array de workouts con el ejercicio
+ */
+export async function obtenerWorkoutsConEjercicio(userId, exerciseId, limite = 50) {
+    try {
+        const workoutsRef = collection(db, 'users', userId, 'workouts');
+        const q = query(
+            workoutsRef,
+            where('estado', '==', 'completado'),
+            orderBy('fechaISO', 'desc'),
+            limit(limite)
+        );
+        
+        const snapshot = await getDocs(q);
+        const workouts = [];
+        
+        snapshot.forEach(doc => {
+            const workout = { id: doc.id, ...doc.data() };
+            
+            // Verificar si este workout contiene el ejercicio
+            const ejercicio = workout.ejercicios?.find(e => e.exerciseId === exerciseId);
+            
+            if (ejercicio) {
+                workouts.push({
+                    id: workout.id,
+                    fecha: workout.fecha?.toDate ? workout.fecha.toDate() : new Date(workout.fechaISO),
+                    fechaISO: workout.fechaISO,
+                    rutinaId: workout.rutinaId,
+                    rutinaNombre: workout.rutinaNombre,
+                    ejercicio: ejercicio,
+                    duracion: workout.duracion,
+                    estadisticas: workout.estadisticas
+                });
+            }
+        });
+        
+        console.log(`✅ Encontrados ${workouts.length} workouts con ejercicio ${exerciseId}`);
+        return workouts.reverse(); // Orden cronológico ascendente
+    } catch (error) {
+        console.error('❌ Error al obtener workouts con ejercicio:', error);
+        throw error;
+    }
+}
+
+/**
+ * Obtiene el progreso de un ejercicio con estadísticas
+ * @param {string} userId - ID del usuario
+ * @param {string} exerciseId - ID del ejercicio
+ * @returns {Promise<Object>} - Datos de progreso del ejercicio
+ */
+export async function obtenerProgresoEjercicio(userId, exerciseId) {
+    try {
+        const workouts = await obtenerWorkoutsConEjercicio(userId, exerciseId);
+        
+        if (workouts.length === 0) {
+            return {
+                totalWorkouts: 0,
+                fechas: [],
+                pesoMaximo: [],
+                volumenTotal: [],
+                mejorSerie: null,
+                tendencia: 'sin-datos'
+            };
+        }
+        
+        const fechas = [];
+        const pesoMaximo = [];
+        const volumenTotal = [];
+        let mejorPeso = 0;
+        let mejorSerie = null;
+        
+        workouts.forEach(w => {
+            const ejercicio = w.ejercicio;
+            fechas.push(w.fechaISO);
+            
+            // Peso máximo en ese workout
+            const maxPeso = ejercicio.pesoMaximo || 0;
+            pesoMaximo.push(maxPeso);
+            
+            // Volumen total del ejercicio en ese workout
+            const volumen = ejercicio.volumenTotal || 0;
+            volumenTotal.push(volumen);
+            
+            // Tracking de mejor serie
+            if (maxPeso > mejorPeso) {
+                mejorPeso = maxPeso;
+                mejorSerie = {
+                    fecha: w.fechaISO,
+                    peso: maxPeso,
+                    reps: ejercicio.repsMaximo || 0
+                };
+            }
+        });
+        
+        // Calcular tendencia simple
+        let tendencia = 'estable';
+        if (pesoMaximo.length >= 3) {
+            const recientes = pesoMaximo.slice(-3);
+            const promReciente = recientes.reduce((a, b) => a + b, 0) / recientes.length;
+            const antiguos = pesoMaximo.slice(0, 3);
+            const promAntiguo = antiguos.reduce((a, b) => a + b, 0) / antiguos.length;
+            
+            if (promReciente > promAntiguo * 1.1) tendencia = 'mejorando';
+            else if (promReciente < promAntiguo * 0.9) tendencia = 'declinando';
+        }
+        
+        return {
+            totalWorkouts: workouts.length,
+            fechas,
+            pesoMaximo,
+            volumenTotal,
+            mejorSerie,
+            tendencia
+        };
+    } catch (error) {
+        console.error('❌ Error al obtener progreso de ejercicio:', error);
+        throw error;
+    }
+}
