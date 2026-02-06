@@ -128,18 +128,6 @@
                     </div>
                 </div>
                 
-                <!-- Tarjeta de agua -->
-                <div class="dashboard-card">
-                    <div class="card-icon" style="background: #06b6d4;">
-                        <i class="fas fa-glass-water"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Agua Consumida</h3>
-                        <p class="card-value" id="aguaHoy">0/8</p>
-                        <p class="card-label">vasos</p>
-                    </div>
-                </div>
-                
                 <!-- Tarjeta de tiempo -->
                 <div class="dashboard-card">
                     <div class="card-icon" style="background: #10b981;">
@@ -150,6 +138,78 @@
                         <p class="card-value" id="tiempoHoy">0</p>
                         <p class="card-label">minutos</p>
                     </div>
+                </div>
+                
+                <!-- Tarjeta de Streak (Racha) -->
+                <div class="dashboard-card streak-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        <i class="fas fa-fire-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Racha Actual</h3>
+                        <p class="card-value" id="streakActual">0</p>
+                        <p class="card-label">días consecutivos</p>
+                    </div>
+                    <div class="streak-icon-animation" id="streakAnimation" style="display: none;">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h2><i class="fas fa-bolt"></i> Acciones Rápidas</h2>
+                <div class="quick-actions-grid">
+                    <a href="entrenar.html" class="quick-action-card">
+                        <div class="qa-icon" style="background: #3b82f6;">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <h3>Iniciar Entrenamiento</h3>
+                        <p>Comienza tu rutina ahora</p>
+                    </a>
+                    
+                    <a href="historial.html" class="quick-action-card">
+                        <div class="qa-icon" style="background: #8b5cf6;">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3>Ver Historial</h3>
+                        <p>Revisa tus entrenamientos</p>
+                    </a>
+                    
+                    <a href="explorar-rutinas.html" class="quick-action-card">
+                        <div class="qa-icon" style="background: #10b981;">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>Explorar Rutinas</h3>
+                        <p>Descubre nuevas rutinas</p>
+                    </a>
+                    
+                    <a href="mi-cuenta.html" class="quick-action-card">
+                        <div class="qa-icon" style="background: #f59e0b;">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <h3>Mi Perfil</h3>
+                        <p>Actualiza tus datos</p>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Personal Records (PRs) -->
+            <div class="personal-records">
+                <h2><i class="fas fa-trophy"></i> Tus Mejores Marcas (PRs)</h2>
+                <div class="pr-grid" id="prGrid">
+                    <div class="pr-placeholder">
+                        <i class="fas fa-chart-line"></i>
+                        <p>Completa entrenamientos para ver tus mejores marcas</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gráfico de Progreso Semanal -->
+            <div class="weekly-progress-chart">
+                <h2><i class="fas fa-chart-bar"></i> Tu Progreso Esta Semana</h2>
+                <div class="chart-container">
+                    <canvas id="graficoProgresoSemanal"></canvas>
                 </div>
             </div>
             
@@ -167,28 +227,7 @@
                             <p class="objetivo-label">kcal/día</p>
                         </div>
                     </div>
-                    
-                    <div class="objetivo-card">
-                        <div class="objetivo-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                            <i class="fas fa-drumstick-bite"></i>
-                        </div>
-                        <div class="objetivo-info">
-                            <h4>Proteínas</h4>
-                            <p class="objetivo-value" id="objDashProteinas">150</p>
-                            <p class="objetivo-label">gramos/día</p>
-                        </div>
-                    </div>
-                    
-                    <div class="objetivo-card">
-                        <div class="objetivo-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
-                            <i class="fas fa-glass-water"></i>
-                        </div>
-                        <div class="objetivo-info">
-                            <h4>Hidratación</h4>
-                            <p class="objetivo-value" id="objDashAgua">8</p>
-                            <p class="objetivo-label">vasos/día</p>
-                        </div>
-                    </div>
+
                 </div>
                 
                 <!-- Progreso hacia objetivo de peso -->
@@ -515,14 +554,6 @@
                 <h3><i class="fas fa-clock"></i> Minutos de Ejercicio (Última Semana)</h3>
                 <div class="chart-container">
                     <canvas id="graficoMinutosSemana"></canvas>
-                </div>
-            </div>
-            
-            <!-- Gráfico de agua -->
-            <div class="card">
-                <h3><i class="fas fa-glass-water"></i> Consumo de Agua (Última Semana)</h3>
-                <div class="chart-container">
-                    <canvas id="graficoAguaSemana"></canvas>
                 </div>
             </div>
         </section>

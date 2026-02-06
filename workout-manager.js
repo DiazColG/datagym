@@ -688,3 +688,169 @@ export async function obtenerProgresoEjercicio(userId, exerciseId) {
         throw error;
     }
 }
+
+// =========================================
+// CALCULAR STREAK (RACHA DE DÍAS CONSECUTIVOS)
+// =========================================
+
+/**
+ * Calcula la racha de días consecutivos con entrenamiento
+ * 
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<number>} - Número de días consecutivos
+ */
+export async function calcularStreak(userId) {
+    try {
+        const q = query(
+            collection(db, 'users', userId, 'workouts'),
+            where('estado', '==', 'completado'),
+            orderBy('fecha', 'desc'),
+            limit(365) // Revisar último año
+        );
+        
+        const snapshot = await getDocs(q);
+        
+        if (snapshot.empty) {
+            return 0;
+        }
+        
+        // Obtener fechas únicas (sin horas)
+        const fechasSet = new Set();
+        snapshot.forEach(doc => {
+            const fecha = doc.data().fecha;
+            let fechaISO;
+            
+            if (fecha?.toDate) {
+                fechaISO = fecha.toDate().toISOString().split('T')[0];
+            } else if (typeof fecha === 'string') {
+                fechaISO = fecha.split('T')[0];
+            } else if (fecha instanceof Date) {
+                fechaISO = fecha.toISOString().split('T')[0];
+            }
+            
+            if (fechaISO) fechasSet.add(fechaISO);
+        });
+        
+        const fechasOrdenadas = Array.from(fechasSet).sort().reverse();
+        
+        // Calcular streak desde hoy hacia atrás
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        
+        let streak = 0;
+        let fechaActual = new Date(hoy);
+        
+        for (const fechaStr of fechasOrdenadas) {
+            const fecha = new Date(fechaStr + 'T00:00:00');
+            const diffDias = Math.floor((fechaActual - fecha) / (1000 * 60 * 60 * 24));
+            
+            if (diffDias === 0 || diffDias === 1) {
+                streak++;
+                fechaActual = new Date(fecha);
+            } else {
+                break;
+            }
+        }
+        
+        return streak;
+    } catch (error) {
+        console.error('❌ Error al calcular streak:', error);
+        return 0;
+    }
+}
+
+// =========================================
+// OBTENER PERSONAL RECORDS (PRs)
+// =========================================
+
+/**
+ * Obtiene los mejores records personales del usuario
+ * 
+ * @param {string} userId - ID del usuario
+ * @param {number} limite - Número de PRs a obtener
+ * @returns {Promise<Array>} - Array de PRs
+ */
+export async function obtenerPersonalRecords(userId, limite = 5) {
+    try {
+        const q = query(
+            collection(db, 'users', userId, 'workouts'),
+            where('estado', '==', 'completado'),
+            orderBy('fecha', 'desc'),
+            limit(100) // Analizar últimos 100 workouts
+        );
+        
+        const snapshot = await getDocs(q);
+        
+        if (snapshot.empty) {
+            return [];
+        }
+        
+        // Mapa para almacenar el mejor registro de cada ejercicio
+        const recordsPorEjercicio = new Map();
+        
+        snapshot.forEach(doc => {
+            const workout = doc.data();
+            
+            if (!workout.ejercicios) return;
+            
+            workout.ejercicios.forEach(ej => {
+                if (!ej.series || ej.series.length === 0) return;
+                
+                // Buscar el mejor peso/reps del ejercicio en este workout
+                let mejorSerie = null;
+                let mejorValor = 0;
+                
+                ej.series.forEach(serie => {
+                    if (!serie.completada) return;
+                    
+                    let valor = 0;
+                    
+                    // Calcular valor según tipo de medición
+                    if (ej.tipoMedicion === 'peso') {
+                        valor = (serie.peso || 0) * (serie.reps || 1);
+                    } else if (ej.tipoMedicion === 'reps') {
+                        valor = serie.reps || 0;
+                    } else if (ej.tipoMedicion === 'tiempo') {
+                        valor = serie.tiempo || 0;
+                    }
+                    
+                    if (valor > mejorValor) {
+                        mejorValor = valor;
+                        mejorSerie = {
+                            ...serie,
+                            fecha: workout.fecha
+                        };
+                    }
+                });
+                
+                if (!mejorSerie) return;
+                
+                // Comparar con el record actual de este ejercicio
+                const recordActual = recordsPorEjercicio.get(ej.exerciseId);
+                
+                if (!recordActual || mejorValor > recordActual.valor) {
+                    recordsPorEjercicio.set(ej.exerciseId, {
+                        exerciseId: ej.exerciseId,
+                        exerciseName: ej.exerciseName,
+                        grupoMuscular: ej.grupoMuscular,
+                        tipoMedicion: ej.tipoMedicion,
+                        valor: mejorValor,
+                        serie: mejorSerie,
+                        fecha: workout.fecha
+                    });
+                }
+            });
+        });
+        
+        // Convertir a array y ordenar por valor
+        const records = Array.from(recordsPorEjercicio.values())
+            .sort((a, b) => b.valor - a.valor)
+            .slice(0, limite);
+        
+        return records;
+        
+    } catch (error) {
+        console.error('❌ Error al obtener personal records:', error);
+        return [];
+    }
+}

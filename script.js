@@ -29,7 +29,7 @@ import {
 import { obtenerPerfilCompleto, obtenerObjetivosDiarios, obtenerProgresoObjetivoPeso } from './profile-manager.js';
 
 // Importar módulos del sistema de workouts
-import { obtenerEstadisticasSemanales } from './workout-manager.js';
+import { obtenerEstadisticasSemanales, calcularStreak, obtenerPersonalRecords } from './workout-manager.js';
 
 // =========================================
 // VARIABLES GLOBALES
@@ -220,6 +220,15 @@ function mostrarObjetivosPersonalizados() {
     
     // Mostrar estadísticas de workouts
     mostrarEstadisticasWorkouts();
+    
+    // Mostrar streak (racha de días consecutivos)
+    mostrarStreak();
+    
+    // Mostrar Personal Records
+    mostrarPersonalRecords();
+    
+    // Mostrar gráfico de progreso semanal
+    mostrarGraficoProgresoSemanal();
 }
 
 function mostrarProgresoObjetivoPeso() {
@@ -1585,5 +1594,278 @@ function formatearVolumen(volumen) {
         return `${(volumen / 1000).toFixed(1)}k kg`;
     }
     return `${volumen} kg`;
+}
+
+// =========================================
+// MOSTRAR STREAK (RACHA)
+// =========================================
+
+async function mostrarStreak() {
+    try {
+        if (!userId) return;
+        
+        const streak = await calcularStreak(userId);
+        
+        // Actualizar el valor del streak
+        const streakEl = document.getElementById('streakActual');
+        if (streakEl) {
+            streakEl.textContent = streak;
+        }
+        
+        // Mostrar animación si el streak es >= 3
+        const animationEl = document.getElementById('streakAnimation');
+        if (animationEl && streak >= 3) {
+            animationEl.style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('Error al mostrar streak:', error);
+    }
+}
+
+// =========================================
+// MOSTRAR PERSONAL RECORDS
+// =========================================
+
+async function mostrarPersonalRecords() {
+    try {
+        if (!userId) return;
+        
+        const records = await obtenerPersonalRecords(userId, 4);
+        
+        const prGrid = document.getElementById('prGrid');
+        if (!prGrid) return;
+        
+        if (records.length === 0) {
+            // Mantener el placeholder
+            return;
+        }
+        
+        // Limpiar el grid
+        prGrid.innerHTML = '';
+        
+        // Crear tarjetas para cada PR
+        records.forEach(record => {
+            const prCard = document.createElement('div');
+            prCard.className = 'pr-card';
+            
+            // Formatear valor según tipo de medición
+            let valorDisplay = '';
+            if (record.tipoMedicion === 'peso') {
+                valorDisplay = `${record.serie.peso} kg × ${record.serie.reps}`;
+            } else if (record.tipoMedicion === 'reps') {
+                valorDisplay = `${record.serie.reps} reps`;
+            } else if (record.tipoMedicion === 'tiempo') {
+                valorDisplay = `${record.serie.tiempo}s`;
+            }
+            
+            // Formatear fecha
+            let fechaDisplay = 'Fecha desconocida';
+            if (record.fecha) {
+                let fecha;
+                if (record.fecha?.toDate) {
+                    fecha = record.fecha.toDate();
+                } else if (typeof record.fecha === 'string') {
+                    fecha = new Date(record.fecha);
+                } else {
+                    fecha = new Date(record.fecha);
+                }
+                
+                const hoy = new Date();
+                const diffDias = Math.floor((hoy - fecha) / (1000 * 60 * 60 * 24));
+                
+                if (diffDias === 0) fechaDisplay = 'Hoy';
+                else if (diffDias === 1) fechaDisplay = 'Ayer';
+                else if (diffDias < 7) fechaDisplay = `Hace ${diffDias} días`;
+                else fechaDisplay = fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+            }
+            
+            // Icono según grupo muscular
+            const iconos = {
+                'pecho': 'fa-dumbbell',
+                'espalda': 'fa-dumbbell',
+                'piernas': 'fa-running',
+                'hombros': 'fa-dumbbell',
+                'brazos': 'fa-fist-raised',
+                'core': 'fa-walking',
+                'cardio': 'fa-heartbeat',
+                'default': 'fa-trophy'
+            };
+            
+            const icono = iconos[record.grupoMuscular] || iconos.default;
+            
+            prCard.innerHTML = `
+                <div class="pr-header">
+                    <div class="pr-icon">
+                        <i class="fas ${icono}"></i>
+                    </div>
+                    <div class="pr-title">
+                        <h4>${record.exerciseName}</h4>
+                        <p>${record.grupoMuscular}</p>
+                    </div>
+                </div>
+                <div class="pr-value">${valorDisplay}</div>
+                <div class="pr-date">
+                    <i class="fas fa-calendar-alt"></i>
+                    ${fechaDisplay}
+                </div>
+            `;
+            
+            prGrid.appendChild(prCard);
+        });
+        
+    } catch (error) {
+        console.error('Error al mostrar personal records:', error);
+    }
+}
+
+// =========================================
+// GRÁFICO DE PROGRESO SEMANAL
+// =========================================
+
+let graficoProgresoSemanalInstance = null;
+
+async function mostrarGraficoProgresoSemanal() {
+    try {
+        if (!userId) return;
+        
+        const stats = await obtenerEstadisticasSemanales(userId);
+        
+        const canvas = document.getElementById('graficoProgresoSemanal');
+        if (!canvas) return;
+        
+        // Destruir instancia previa si existe
+        if (graficoProgresoSemanalInstance) {
+            graficoProgresoSemanalInstance.destroy();
+        }
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Preparar datos de la semana
+        const diasSemana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+        const workoutsPorDia = new Array(7).fill(0);
+        const volumenPorDia = new Array(7).fill(0);
+        const caloriasPorDia = new Array(7).fill(0);
+        
+        // Obtener fecha de inicio de semana (lunes)
+        const hoy = new Date();
+        const diaSemana = hoy.getDay(); // 0 = domingo, 1 = lunes, etc.
+        const diasDesdeInicioSemana = diaSemana === 0 ? 6 : diaSemana - 1;
+        const inicioSemana = new Date(hoy);
+        inicioSemana.setDate(hoy.getDate() - diasDesdeInicioSemana);
+        inicioSemana.setHours(0, 0, 0, 0);
+        
+        // Procesar workouts por día
+        if (stats.workouts && stats.workouts.length > 0) {
+            stats.workouts.forEach(workout => {
+                let fecha;
+                if (workout.fecha?.toDate) {
+                    fecha = workout.fecha.toDate();
+                } else if (typeof workout.fecha === 'string') {
+                    fecha = new Date(workout.fecha);
+                } else {
+                    fecha = new Date(workout.fecha);
+                }
+                
+                const diffDias = Math.floor((fecha - inicioSemana) / (1000 * 60 * 60 * 24));
+                
+                if (diffDias >= 0 && diffDias < 7) {
+                    workoutsPorDia[diffDias]++;
+                    volumenPorDia[diffDias] += workout.volumenTotal || 0;
+                    caloriasPorDia[diffDias] += workout.caloriasQuemadas || 0;
+                }
+            });
+        }
+        
+        graficoProgresoSemanalInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: diasSemana,
+                datasets: [
+                    {
+                        label: 'Workouts',
+                        data: workoutsPorDia,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Volumen (kg)',
+                        data: volumenPorDia,
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        yAxisID: 'y1',
+                        hidden: true // Oculto por defecto
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        callbacks: {
+                            afterLabel: function(context) {
+                                const index = context.dataIndex;
+                                return `Calorías: ${caloriasPorDia[index]} kcal`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        title: {
+                            display: true,
+                            text: 'Entrenamientos'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Volumen (kg)'
+                        }
+                    }
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error al mostrar gráfico de progreso semanal:', error);
+    }
 }
 

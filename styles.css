@@ -266,6 +266,230 @@ body {
     color: var(--gray-500);
 }
 
+/* Streak Card (Racha) */
+.streak-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.streak-icon-animation {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 2rem;
+    color: rgba(245, 158, 11, 0.2);
+    animation: flameFlicker 2s infinite;
+}
+
+@keyframes flameFlicker {
+    0%, 100% { transform: scale(1) rotate(-5deg); opacity: 0.2; }
+    50% { transform: scale(1.1) rotate(5deg); opacity: 0.3; }
+}
+
+/* Quick Actions */
+.quick-actions {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.quick-actions h2 {
+    font-size: 1.5rem;
+    color: var(--gray-800);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quick-actions h2 i {
+    color: var(--warning-orange);
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.quick-action-card {
+    background: var(--white);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+}
+
+.quick-action-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+}
+
+.qa-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.5rem;
+}
+
+.quick-action-card h3 {
+    font-size: 1rem;
+    color: var(--gray-800);
+    margin: 0;
+}
+
+.quick-action-card p {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin: 0;
+}
+
+/* Personal Records (PRs) */
+.personal-records {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.personal-records h2 {
+    font-size: 1.5rem;
+    color: var(--gray-800);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.personal-records h2 i {
+    color: var(--warning-orange);
+}
+
+.pr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.pr-card {
+    background: linear-gradient(135deg, var(--white) 0%, var(--gray-50) 100%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--warning-orange);
+    transition: var(--transition);
+}
+
+.pr-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.pr-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.pr-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--warning-orange) 0%, #d97706 100%);
+    color: var(--white);
+    font-size: 1.25rem;
+}
+
+.pr-title {
+    flex: 1;
+}
+
+.pr-title h4 {
+    font-size: 0.95rem;
+    color: var(--gray-800);
+    margin-bottom: 0.25rem;
+}
+
+.pr-title p {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+}
+
+.pr-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: var(--gray-900);
+    margin-bottom: 0.5rem;
+}
+
+.pr-date {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.pr-placeholder {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--gray-500);
+}
+
+.pr-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.pr-placeholder p {
+    font-size: 1rem;
+}
+
+/* Weekly Progress Chart */
+.weekly-progress-chart {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    background: var(--white);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.weekly-progress-chart h2 {
+    font-size: 1.5rem;
+    color: var(--gray-800);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.weekly-progress-chart h2 i {
+    color: var(--primary-blue-light);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.chart-container canvas {
+    max-height: 300px;
+}
+
 .motivational-message {
     background: linear-gradient(135deg, var(--primary-blue-light), var(--primary-blue-lighter));
     color: var(--white);
