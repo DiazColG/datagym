@@ -66,7 +66,11 @@ export function inicializarProteccionNav() {
         if (link && link.href) {
             const url = link.getAttribute('href');
             if (url && !url.startsWith('#')) {
-                protegerNavegacion(e, url);
+                // Solo proteger si ya se verificó el auth y no está autenticado
+                if (authChecked && !isAuthenticated) {
+                    protegerNavegacion(e, url);
+                }
+                // Si está autenticado o aún no se verificó, dejar navegar normalmente
             }
         }
     });
