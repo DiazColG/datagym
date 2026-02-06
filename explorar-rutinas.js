@@ -52,11 +52,23 @@ async function inicializarApp() {
 // ================================================
 
 function configurarEventos() {
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        auth.signOut();
-    });
+    // Mi Cuenta
+    const navMiCuenta = document.getElementById('navMiCuenta');
+    if (navMiCuenta) {
+        navMiCuenta.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'mi-cuenta.html';
+        });
+    }
+
+    // Nav Toggle (Mobile)
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    }
 
     // Ir a Mis Rutinas
     document.getElementById('misRutinasBtn').addEventListener('click', () => {
