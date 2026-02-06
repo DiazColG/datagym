@@ -73,30 +73,28 @@ export async function crearRutina(userId, rutina) {
 export async function obtenerRutinas(userId, filtros = {}) {
     try {
         const rutinasRef = collection(db, 'users', userId, 'rutinas');
-        let q = query(rutinasRef);
         
-        // Aplicar filtros
-        if (filtros.activa !== undefined) {
-            q = query(q, where('activa', '==', filtros.activa));
-        }
-        
-        if (filtros.favorita !== undefined) {
-            q = query(q, where('favorita', '==', filtros.favorita));
-        }
-        
-        // Ordenar
-        const orden = filtros.ordenar || 'fechaCreacion';
-        q = query(q, orderBy(orden, 'desc'));
+        // Query simple sin where + orderBy para evitar error de índices
+        let q = query(rutinasRef, orderBy('fechaCreacion', 'desc'));
         
         const snapshot = await getDocs(q);
         
-        const rutinas = [];
+        let rutinas = [];
         snapshot.forEach((doc) => {
             rutinas.push({
                 id: doc.id,
                 ...doc.data()
             });
         });
+        
+        // Aplicar filtros en el cliente
+        if (filtros.activa !== undefined) {
+            rutinas = rutinas.filter(r => r.activa === filtros.activa);
+        }
+        
+        if (filtros.favorita !== undefined) {
+            rutinas = rutinas.filter(r => r.favorita === filtros.favorita);
+        }
         
         return rutinas;
     } catch (error) {
