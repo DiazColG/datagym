@@ -191,7 +191,7 @@ function crearRutinaCard(rutina) {
                         <span class="stat-mini-label">Ejercicios</span>
                     </div>
                     <div class="stat-mini">
-                        <span class="stat-mini-number">${calcularSeriesT otales(rutina)}</span>
+                        <span class="stat-mini-number">${calcularSeriesTotales(rutina)}</span>
                         <span class="stat-mini-label">Series</span>
                     </div>
                 </div>
