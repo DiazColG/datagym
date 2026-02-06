@@ -264,12 +264,36 @@ async function cargarEstadisticasSemanales() {
     
     try {
         const inicioSemana = obtenerInicioSemana();
+        const finSemana = new Date(inicioSemana);
+        finSemana.setDate(inicioSemana.getDate() + 7);
         
-        workoutsElement.textContent = '3';
-        caloriesElement.textContent = '1,250';
-        minutesElement.textContent = '180';
+        // Obtener workouts de esta semana
+        const { obtenerHistorialWorkouts } = await import('./workout-manager.js');
+        const workouts = await obtenerHistorialWorkouts(usuarioActual.uid, 100);
+        
+        // Filtrar solo workouts de esta semana
+        const workoutsSemana = workouts.filter(w => {
+            const fechaWorkout = w.fecha?.toDate ? w.fecha.toDate() : new Date(w.fecha);
+            return fechaWorkout >= inicioSemana && fechaWorkout < finSemana;
+        });
+        
+        // Calcular estadísticas reales
+        const totalWorkouts = workoutsSemana.length;
+        const totalCalorias = workoutsSemana.reduce((sum, w) => sum + (w.estadisticas?.calorias || 0), 0);
+        const totalMinutos = workoutsSemana.reduce((sum, w) => sum + (w.duracion || 0), 0);
+        
+        workoutsElement.textContent = totalWorkouts;
+        caloriesElement.textContent = totalCalorias.toLocaleString();
+        minutesElement.textContent = totalMinutos;
+        
+        // Guardar para el calendario
+        window.workoutsSemanaData = workoutsSemana;
+        
     } catch (error) {
         console.error('Error cargando estadísticas:', error);
+        workoutsElement.textContent = '0';
+        caloriesElement.textContent = '0';
+        minutesElement.textContent = '0';
     }
 }
 
@@ -279,6 +303,7 @@ function renderizarCalendarioSemanal() {
     const inicioDeSemana = obtenerInicioSemana();
     
     const diasSemana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const workoutsSemana = window.workoutsSemanaData || [];
     
     let htmlCalendario = '';
     for (let i = 0; i < 7; i++) {
@@ -286,13 +311,18 @@ function renderizarCalendarioSemanal() {
         diaActual.setDate(inicioDeSemana.getDate() + i);
         
         const esHoy = diaActual.toDateString() === hoy.toDateString();
-        const completado = i < 3;
+        
+        // Verificar si hay workouts en este día
+        const tieneWorkout = workoutsSemana.some(w => {
+            const fechaWorkout = w.fecha?.toDate ? w.fecha.toDate() : new Date(w.fecha);
+            return fechaWorkout.toDateString() === diaActual.toDateString();
+        });
         
         htmlCalendario += `
-            <div class="calendar-day ${esHoy ? 'today' : ''} ${completado ? 'completed' : ''}">
+            <div class="calendar-day ${esHoy ? 'today' : ''} ${tieneWorkout ? 'completed' : ''}">
                 <div class="calendar-day-name">${diasSemana[i]}</div>
                 <div class="calendar-day-number">${diaActual.getDate()}</div>
-                ${completado ? '<i class="fas fa-check"></i>' : ''}
+                ${tieneWorkout ? '<i class="fas fa-check"></i>' : ''}
             </div>
         `;
     }
