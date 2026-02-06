@@ -743,6 +743,12 @@
     <div id="modalMiCuentaContainer"></div>
 
     <!-- Script principal -->
+    <script type="module" src="nav-protection.js"></script>
     <script type="module" src="script.js"></script>
+    <script type="module">
+        import { inicializarProteccionNav } from './nav-protection.js';
+        // Inicializar protección de navegación
+        inicializarProteccionNav();
+    </script>
 </body>
 </html>

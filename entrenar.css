@@ -2,6 +2,65 @@
    PÁGINA DE ENTRENAR - ESTILOS ÚNICOS
    ======================================== */
 
+/* ========================================
+   OVERLAY DE AUTENTICACIÓN
+   ======================================== */
+
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-loading {
+    text-align: center;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.auth-loading .spinner-large {
+    margin: 0 auto 1.5rem;
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--gray-300);
+    border-top-color: var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.auth-loading p {
+    font-size: 1.2rem;
+    color: var(--primary-blue);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.auth-loading small {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ========================================
+   HEADER DE ENTRENAMIENTO
+   ======================================== */
+
 .training-header {
     text-align: center;
     margin-bottom: 2.5rem;

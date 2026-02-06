@@ -1579,3 +1579,58 @@ body {
         font-size: 1.5rem;
     }
 }
+
+/* ===================================
+   TOAST DE AUTENTICACIÓN REQUERIDA
+   =================================== */
+
+.auth-required-toast {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--warning-orange);
+}
+
+.auth-required-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.auth-required-toast .toast-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1rem;
+    color: var(--gray-800);
+}
+
+.auth-required-toast .toast-content i {
+    color: var(--warning-orange);
+    font-size: 1.5rem;
+}
+
+.auth-required-toast .toast-content span {
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .auth-required-toast {
+        top: 70px;
+        left: 1rem;
+        right: 1rem;
+        transform: translateY(-100px);
+        padding: 0.875rem 1.5rem;
+    }
+    
+    .auth-required-toast.show {
+        transform: translateY(0);
+    }
+}

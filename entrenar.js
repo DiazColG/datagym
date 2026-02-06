@@ -20,15 +20,41 @@ document.addEventListener('DOMContentLoaded', () => {
     configurarNavegacion();
     configurarEventos();
     
+    // Mostrar overlay de carga inicial
+    mostrarOverlayAuth(true);
+    
     onAuthStateChanged(auth, (usuario) => {
         if (usuario) {
             usuarioActual = usuario;
+            mostrarOverlayAuth(false);
             cargarDatosEntrenar();
         } else {
-            window.location.href = 'auth.html';
+            // Mostrar mensaje y redirigir después de un breve delay
+            const overlay = document.getElementById('authOverlay');
+            if (overlay) {
+                const mensaje = overlay.querySelector('p');
+                if (mensaje) {
+                    mensaje.textContent = 'Debes iniciar sesión para acceder';
+                }
+            }
+            
+            setTimeout(() => {
+                window.location.href = 'auth.html';
+            }, 1500);
         }
     });
 });
+
+// ================================================
+// FUNCIONES DE UI
+// ================================================
+
+function mostrarOverlayAuth(mostrar) {
+    const overlay = document.getElementById('authOverlay');
+    if (overlay) {
+        overlay.style.display = mostrar ? 'flex' : 'none';
+    }
+}
 
 // ================================================
 // CONFIGURACIÓN DE EVENTOS
