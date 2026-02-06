@@ -1,0 +1,841 @@
+/* ================================================
+   EXPLORAR RUTINAS - ESTILOS
+   ================================================ */
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary, #1f2937);
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--text-secondary, #6b7280);
+    margin: 0.5rem 0 0 0;
+}
+
+/* ================================================
+   FILTERS SECTION
+   ================================================ */
+
+.filters-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Bar */
+.search-bar {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color, #4f46e5);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Filter Pills */
+.filters-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: var(--text-primary, #1f2937);
+    min-width: 80px;
+}
+
+.filter-pill {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 20px;
+    background: white;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-pill:hover {
+    border-color: var(--primary-color, #4f46e5);
+    background: rgba(79, 70, 229, 0.05);
+    color: var(--primary-color, #4f46e5);
+}
+
+.filter-pill.active {
+    border-color: var(--primary-color, #4f46e5);
+    background: var(--primary-color, #4f46e5);
+    color: white;
+}
+
+/* Active Filters */
+.active-filters {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.active-filters-label {
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+#activeFiltersList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.active-filter-tag {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background: #eff6ff;
+    color: #1e40af;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.btn-clear-filters {
+    padding: 0.5rem 1rem;
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-clear-filters:hover {
+    background: #fecaca;
+}
+
+/* ================================================
+   STATS SECTION
+   ================================================ */
+
+.rutinas-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: white;
+    padding: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary, #1f2937);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+/* ================================================
+   RUTINAS GRID
+   ================================================ */
+
+.rutinas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Rutina Card */
+.rutina-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.rutina-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.rutina-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+}
+
+.rutina-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.rutina-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-popular {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-copied {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-nivel-principiante {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-nivel-intermedio {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-nivel-avanzado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-objetivo {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+/* Card Body */
+.rutina-card-body {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.rutina-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary, #1f2937);
+    margin: 0 0 0.75rem 0;
+}
+
+.rutina-description {
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0 0 1rem 0;
+}
+
+.rutina-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.meta-icon {
+    font-size: 1rem;
+}
+
+.meta-text {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.rutina-stats-mini {
+    display: flex;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.stat-mini {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-mini-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color, #4f46e5);
+    line-height: 1;
+}
+
+.stat-mini-label {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-top: 0.25rem;
+}
+
+/* Card Footer */
+.rutina-card-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #f3f4f6;
+    background: #fafafa;
+}
+
+.btn-view {
+    flex: 1;
+}
+
+.btn-copy-quick {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ================================================
+   MODAL DETALLE
+   ================================================ */
+
+.modal-large {
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.rutina-detalle-header {
+    padding: 2rem;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.rutina-detalle-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    flex-shrink: 0;
+}
+
+.rutina-detalle-info {
+    flex: 1;
+}
+
+.rutina-detalle-info h2 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.75rem;
+    color: var(--text-primary, #1f2937);
+}
+
+.rutina-detalle-info p {
+    margin: 0 0 1rem 0;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.rutina-detalle-meta {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* Detalle Stats */
+.rutinas-detalle-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.stat-card-detalle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.stat-icon-detalle {
+    font-size: 2rem;
+}
+
+.stat-card-detalle div {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-card-detalle strong {
+    font-size: 1.25rem;
+    color: var(--text-primary, #1f2937);
+}
+
+.stat-card-detalle span {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* Detalle Section */
+.rutina-detalle-section {
+    padding: 2rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.rutina-detalle-section:last-child {
+    border-bottom: none;
+}
+
+.rutina-detalle-section h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    color: var(--text-primary, #1f2937);
+}
+
+/* Grupos Musculares Tags */
+.grupos-musculares-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.grupo-tag {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+/* Ejercicios Lista Detalle */
+.ejercicios-lista-detalle {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ejercicio-item-detalle {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 10px;
+    border-left: 4px solid var(--primary-color, #4f46e5);
+    transition: all 0.2s;
+}
+
+.ejercicio-item-detalle:hover {
+    background: #f3f4f6;
+    transform: translateX(4px);
+}
+
+.ejercicio-numero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--primary-color, #4f46e5);
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.ejercicio-icon-detalle {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.ejercicio-info-detalle {
+    flex: 1;
+}
+
+.ejercicio-info-detalle strong {
+    display: block;
+    font-size: 1rem;
+    color: var(--text-primary, #1f2937);
+    margin-bottom: 0.5rem;
+}
+
+.ejercicio-parametros {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.ejercicio-parametros .param {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.ejercicio-notas {
+    margin: 0.75rem 0 0 0;
+    padding: 0.5rem 0.75rem;
+    background: #fffbeb;
+    border-left: 3px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    color: #92400e;
+}
+
+.ejercicio-badges-detalle {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.badge-mini {
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.badge-dificultad-principiante {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-dificultad-intermedio {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-dificultad-avanzado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Detalle Footer */
+.rutina-detalle-footer {
+    padding: 1.5rem 2rem;
+    background: #f9fafb;
+    border-radius: 0 0 12px 12px;
+}
+
+.rutina-autor {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* ================================================
+   EMPTY STATE
+   ================================================ */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary, #1f2937);
+    font-size: 1.5rem;
+}
+
+.empty-state p {
+    margin: 0 0 1.5rem 0;
+    color: #6b7280;
+}
+
+/* ================================================
+   LOADING STATE
+   ================================================ */
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    grid-column: 1 / -1;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f4f6;
+    border-top-color: var(--primary-color, #4f46e5);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-state p {
+    margin-top: 1rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* ================================================
+   TOAST NOTIFICATIONS
+   ================================================ */
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+    max-width: 400px;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.toast-message {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--text-primary, #1f2937);
+}
+
+.toast-success {
+    border-left: 4px solid #10b981;
+}
+
+.toast-error {
+    border-left: 4px solid #ef4444;
+}
+
+.toast-info {
+    border-left: 4px solid #3b82f6;
+}
+
+.toast-warning {
+    border-left: 4px solid #f59e0b;
+}
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .rutinas-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rutinas-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-label {
+        min-width: auto;
+    }
+
+    .active-filters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .rutina-detalle-header {
+        flex-direction: column;
+    }
+
+    .rutina-detalle-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .rutina-card-footer {
+        flex-direction: column;
+    }
+
+    .btn-view {
+        width: 100%;
+    }
+
+    .ejercicio-item-detalle {
+        flex-wrap: wrap;
+    }
+
+    .ejercicio-badges-detalle {
+        flex-direction: row;
+        width: 100%;
+    }
+
+    .toast-container {
+        left: 20px;
+        right: 20px;
+    }
+
+    .toast {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .filters-section {
+        padding: 1rem;
+    }
+
+    .rutina-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .rutina-stats-mini {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .stat-mini {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .rutina-detalle-section {
+        padding: 1.5rem 1rem;
+    }
+
+    .grupos-musculares-tags {
+        gap: 0.5rem;
+    }
+
+    .ejercicio-parametros {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}

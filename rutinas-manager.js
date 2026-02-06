@@ -436,3 +436,50 @@ export function calcularDuracionEstimada(rutina) {
     // Agregar 5 minutos de setup inicial
     return minutos + 5;
 }
+
+// =========================================
+// COPIAR RUTINA PÚBLICA
+// =========================================
+
+/**
+ * Copiar una rutina pública a la colección personal del usuario
+ * 
+ * @param {string} userId - ID del usuario
+ * @param {Object} rutinaPublica - Datos de la rutina pública
+ * @returns {Promise<string>} - ID de la rutina copiada
+ */
+export async function copiarRutinaPublica(userId, rutinaPublica) {
+    try {
+        // Crear copia de la rutina con metadatos del usuario
+        const rutinaCopia = {
+            nombre: rutinaPublica.nombre,
+            descripcion: rutinaPublica.descripcion,
+            color: rutinaPublica.color,
+            icono: rutinaPublica.icono,
+            ejercicios: rutinaPublica.ejercicios,
+            activa: true,
+            favorita: false,
+            vecesCompletada: 0,
+            ultimaVez: null,
+            fechaCreacion: Timestamp.now(),
+            ultimaModificacion: Timestamp.now(),
+            // Metadata de origen
+            origen: 'publica',
+            rutinaPublicaId: rutinaPublica.id,
+            nivel: rutinaPublica.nivel,
+            objetivo: rutinaPublica.objetivo,
+            diasSemana: rutinaPublica.diasSemana,
+            duracionEstimada: rutinaPublica.duracionEstimada,
+            gruposMusculares: rutinaPublica.gruposMusculares
+        };
+        
+        const rutinaId = await crearRutina(userId, rutinaCopia);
+        
+        console.log('✅ Rutina pública copiada exitosamente:', rutinaId);
+        return rutinaId;
+        
+    } catch (error) {
+        console.error('❌ Error al copiar rutina pública:', error);
+        throw error;
+    }
+}

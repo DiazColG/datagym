@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorar Rutinas - DataGym</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="explorar-rutinas.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="assets/logo.png" alt="DataGym" class="nav-logo" onerror="this.style.display='none'">
+                <span class="nav-title">DataGym</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Dashboard</a></li>
+                <li><a href="entrenar.html" class="nav-link">Entrenar</a></li>
+                <li><a href="historial.html" class="nav-link">Historial</a></li>
+                <li><a href="explorar-rutinas.html" class="nav-link active">Explorar Rutinas</a></li>
+                <li><a href="#" class="nav-link" id="logoutBtn">Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Explorar Rutinas</h1>
+                <p class="page-subtitle">Descubre rutinas profesionales creadas por expertos</p>
+            </div>
+            <button class="btn btn-secondary" id="misRutinasBtn">
+                <span>📋</span> Mis Rutinas
+            </button>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Buscar rutinas..." class="search-input">
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="filters-pills">
+                <div class="filter-group">
+                    <label class="filter-label">Nivel:</label>
+                    <button class="filter-pill active" data-filter="nivel" data-value="todos">Todos</button>
+                    <button class="filter-pill" data-filter="nivel" data-value="principiante">Principiante</button>
+                    <button class="filter-pill" data-filter="nivel" data-value="intermedio">Intermedio</button>
+                    <button class="filter-pill" data-filter="nivel" data-value="avanzado">Avanzado</button>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Objetivo:</label>
+                    <button class="filter-pill active" data-filter="objetivo" data-value="todos">Todos</button>
+                    <button class="filter-pill" data-filter="objetivo" data-value="fuerza">Fuerza</button>
+                    <button class="filter-pill" data-filter="objetivo" data-value="hipertrofia">Hipertrofia</button>
+                    <button class="filter-pill" data-filter="objetivo" data-value="definicion">Definición</button>
+                    <button class="filter-pill" data-filter="objetivo" data-value="resistencia">Resistencia</button>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Días:</label>
+                    <button class="filter-pill active" data-filter="dias" data-value="todos">Todos</button>
+                    <button class="filter-pill" data-filter="dias" data-value="3">3 días</button>
+                    <button class="filter-pill" data-filter="dias" data-value="4">4 días</button>
+                    <button class="filter-pill" data-filter="dias" data-value="5">5 días</button>
+                    <button class="filter-pill" data-filter="dias" data-value="6">6 días</button>
+                </div>
+            </div>
+
+            <!-- Active Filters Display -->
+            <div class="active-filters" id="activeFilters" style="display: none;">
+                <span class="active-filters-label">Filtros activos:</span>
+                <div id="activeFiltersList"></div>
+                <button class="btn-clear-filters" id="clearFiltersBtn">Limpiar filtros</button>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="rutinas-stats">
+            <div class="stat-badge">
+                <span class="stat-icon">📚</span>
+                <div class="stat-info">
+                    <span class="stat-number" id="totalRutinas">0</span>
+                    <span class="stat-label">Rutinas disponibles</span>
+                </div>
+            </div>
+            <div class="stat-badge">
+                <span class="stat-icon">⭐</span>
+                <div class="stat-info">
+                    <span class="stat-number" id="popularRutinas">0</span>
+                    <span class="stat-label">Rutinas populares</span>
+                </div>
+            </div>
+            <div class="stat-badge">
+                <span class="stat-icon">💾</span>
+                <div class="stat-info">
+                    <span class="stat-number" id="copiedRutinas">0</span>
+                    <span class="stat-label">Rutinas guardadas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rutinas Grid -->
+        <div class="rutinas-grid" id="rutinasGrid">
+            <!-- Loading State -->
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Cargando rutinas...</p>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <span class="empty-icon">😕</span>
+            <h3>No se encontraron rutinas</h3>
+            <p>Prueba ajustando los filtros o busca con otros términos</p>
+            <button class="btn btn-primary" id="resetFiltersBtn">Restablecer filtros</button>
+        </div>
+    </main>
+
+    <!-- Modal Detalle Rutina -->
+    <div class="modal" id="detalleModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="modalTitle">Detalle de Rutina</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content loaded by JS -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalCloseBtn">Cerrar</button>
+                <button class="btn btn-primary" id="copiarRutinaBtn">
+                    <span>📋</span> Copiar a Mis Rutinas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="explorar-rutinas.js"></script>
+</body>
+</html>
