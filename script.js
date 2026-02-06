@@ -491,6 +491,14 @@ function configurarNavegacion() {
     // Navegación por enlaces
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
+            // Solo prevenir default para enlaces con data-section (navegación interna)
+            const sectionId = this.getAttribute('data-section');
+            
+            // Si no tiene data-section, es un link externo - dejar navegación normal
+            if (!sectionId) {
+                return;
+            }
+            
             e.preventDefault();
             
             // Remover clase active de todos los enlaces
@@ -498,9 +506,6 @@ function configurarNavegacion() {
             
             // Agregar clase active al enlace actual
             this.classList.add('active');
-            
-            // Obtener la sección a mostrar
-            const sectionId = this.getAttribute('data-section');
             
             // Ocultar todas las secciones
             sections.forEach(s => s.classList.remove('active'));
