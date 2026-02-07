@@ -1,16 +1,25 @@
 // =========================================
 // BASE DE DATOS DE EJERCICIOS
-// 50 ejercicios esenciales para el sistema de rutinas
+// 200 ejercicios completos para el sistema de rutinas
 // =========================================
 
 import { db } from './firebase-config.js';
 import { collection, doc, setDoc, getDocs, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { EXERCISES_DB_COMPLETE } from './exercises-db-complete-200.js';
 
 // =========================================
-// BASE DE DATOS DE 50 EJERCICIOS
+// BASE DE DATOS DE 200 EJERCICIOS
 // =========================================
 
-export const EXERCISES_DB = [
+// IMPORTANTE: Ahora usamos la base de datos completa de 200 ejercicios
+// Los ejercicios legacy (abajo) se mantienen como fallback
+export const EXERCISES_DB = EXERCISES_DB_COMPLETE;
+
+// =========================================
+// EJERCICIOS LEGACY (FALLBACK)
+// =========================================
+// Mantenidos para compatibilidad, pero ya no se usan como fuente principal
+const EXERCISES_DB_LEGACY = [
     // ========== PECHO (6) ==========
     {
         id: 'press_banca',
@@ -2118,7 +2127,8 @@ export function agruparEjerciciosPorGrupo(ejercicios = EXERCISES_DB) {
 
 export const GRUPOS_MUSCULARES = [
     'pecho', 'espalda', 'piernas', 'hombros', 
-    'biceps', 'triceps', 'core', 'fullbody'
+    'biceps', 'triceps', 'core', 'gluteos', 'cardio', 
+    'accesorios', 'fullbody'
 ];
 
 export const EQUIPAMIENTOS = [
