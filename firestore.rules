@@ -1,0 +1,67 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ================================================
+    // COLECCIONES PÚBLICAS (LECTURA PARA TODOS)
+    // ================================================
+    
+    // Ejercicios públicos - cualquiera puede leer
+    match /exercises/{exerciseId} {
+      allow read: if true;
+      allow write: if false; // Solo admin puede escribir
+    }
+    
+    // Rutinas públicas - cualquiera puede leer
+    match /rutinasPublicas/{rutinaId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // Programas públicos - cualquiera puede leer
+    match /programasPublicos/{programaId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // ================================================
+    // DATOS DE USUARIOS (PRIVADOS)
+    // ================================================
+    
+    match /users/{userId} {
+      // Solo el usuario autenticado puede leer/escribir sus datos
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Perfil del usuario
+      match /profile/{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Workouts del usuario
+      match /workouts/{workoutId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Rutinas del usuario
+      match /rutinas/{rutinaId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Programas del usuario
+      match /programas/{programaId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Registros de ejercicios
+      match /ejercicios/{ejercicioId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Personal records
+      match /records/{recordId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
