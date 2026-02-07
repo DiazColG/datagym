@@ -5,7 +5,7 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { doc, getDoc, updateDoc, serverTimestamp, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { obtenerEjerciciosPublicos } from './ejercicios-publicos.js';
+import { obtenerEjercicios } from './exercises-db.js';
 import { buscarHistorialEjercicio } from './workout-manager.js';
 
 // ================================================
@@ -58,7 +58,7 @@ async function inicializar() {
         // Cargar workout y ejercicios en paralelo
         const [workout, ejercicios] = await Promise.all([
             cargarWorkout(),
-            obtenerEjerciciosPublicos()
+            obtenerEjercicios()
         ]);
         
         if (!workout) {
