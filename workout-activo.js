@@ -85,11 +85,14 @@ async function inicializar() {
 
 async function cargarWorkout() {
     try {
-        const workoutRef = doc(db, 'workouts', workoutId);
+        console.log('📖 Cargando workout:', workoutId, 'para usuario:', userId);
+        const workoutRef = doc(db, 'users', userId, 'workouts', workoutId);
         const workoutSnap = await getDoc(workoutRef);
         
+        console.log('📄 Snapshot exists:', workoutSnap.exists());
+        
         if (!workoutSnap.exists()) {
-            throw new Error('Workout no encontrado');
+            throw new Error('Workout no encontrado en Firestore');
         }
         
         workoutData = { id: workoutSnap.id, ...workoutSnap.data() };
@@ -562,7 +565,7 @@ async function agregarEjercicioAlWorkout(ejercicio) {
 
 async function guardarWorkoutEnFirestore() {
     try {
-        const workoutRef = doc(db, 'workouts', workoutId);
+        const workoutRef = doc(db, 'users', userId, 'workouts', workoutId);
         
         await updateDoc(workoutRef, {
             ejercicios: ejerciciosDelWorkout,
@@ -597,7 +600,7 @@ async function terminarWorkout() {
                 vol + (s.peso * s.reps), 0), 0);
         
         // Actualizar workout en Firestore
-        const workoutRef = doc(db, 'workouts', workoutId);
+        const workoutRef = doc(db, 'users', userId, 'workouts', workoutId);
         await updateDoc(workoutRef, {
             estado: 'completado',
             fechaFin: serverTimestamp(),
@@ -648,7 +651,7 @@ async function cancelarWorkout() {
     try {
         console.log('❌ Cancelando workout...');
         
-        const workoutRef = doc(db, 'workouts', workoutId);
+        const workoutRef = doc(db, 'users', userId, 'workouts', workoutId);
         await updateDoc(workoutRef, {
             estado: 'cancelado',
             fechaCancelacion: serverTimestamp()
