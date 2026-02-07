@@ -269,21 +269,35 @@ function crearCardTemplate(rutina) {
 async function iniciarWorkoutVacio() {
     try {
         console.log('🚀 Iniciando workout vacío...');
+        console.log('👤 UserId:', userId);
+        
+        if (!userId) {
+            throw new Error('No hay userId disponible');
+        }
         
         // Crear workout vacío
+        console.log('📞 Llamando a iniciarWorkout...');
         const workoutId = await iniciarWorkout(userId, null, {
             nombre: 'Entrenamiento Libre',
             ejercicios: []
         });
         
+        if (!workoutId) {
+            throw new Error('iniciarWorkout no devolvió workoutId');
+        }
+        
         console.log('✅ Workout vacío creado:', workoutId);
         
         // Navegar a workout-activo
-        window.location.href = `workout-activo.html?workoutId=${workoutId}&empty=true`;
+        const url = `workout-activo.html?workoutId=${workoutId}&empty=true`;
+        console.log('🔀 Navegando a:', url);
+        window.location.href = url;
         
     } catch (error) {
         console.error('❌ Error al iniciar workout vacío:', error);
-        mostrarToast('Error al iniciar entrenamiento');
+        console.error('❌ Error stack:', error.stack);
+        console.error('❌ Error message:', error.message);
+        mostrarToast('Error al iniciar entrenamiento: ' + error.message);
     }
 }
 

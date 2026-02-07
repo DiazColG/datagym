@@ -35,20 +35,27 @@ import { obtenerEjercicioPorId } from './exercises-db.js';
  */
 export async function iniciarWorkout(userId, rutinaId = null, rutina = null) {
     try {
-        const workoutRef = doc(collection(db, 'users', userId, 'workouts'));
+        console.log('🔥 Iniciando workout...', { userId, rutinaId, rutina: rutina?.nombre });
+        
+        const workoutsRef = collection(db, 'users', userId, 'workouts');
+        const workoutRef = doc(workoutsRef);
+        
+        console.log('📝 WorkoutRef creado:', workoutRef.id);
         
         const ahora = new Date();
         const fechaISO = ahora.toISOString().split('T')[0];
         
         // Preparar ejercicios con estructura de series vacías
         const ejercicios = [];
-        if (rutina && rutina.ejercicios) {
+        if (rutina && rutina.ejercicios && rutina.ejercicios.length > 0) {
+            console.log('📋 Procesando', rutina.ejercicios.length, 'ejercicios de la rutina...');
+            
             for (const ej of rutina.ejercicios) {
                 const exerciseData = await obtenerEjercicioPorId(ej.exerciseId);
                 
                 // Crear series vacías según la configuración
                 const series = [];
-                for (let i = 1; i <= ej.series; i++) {
+                for (let i = 1; i <= (ej.series || 3); i++) {
                     series.push({
                         set: i,
                         reps: 0,
@@ -60,41 +67,36 @@ export async function iniciarWorkout(userId, rutinaId = null, rutina = null) {
                 
                 ejercicios.push({
                     exerciseId: ej.exerciseId,
-                    nombreEjercicio: exerciseData ? exerciseData.nombre : ej.exerciseId,
-                    orden: ej.orden,
-                    series: series,
-                    pesoMaximo: 0,
-                    volumenTotal: 0,
-                    oneRepMax: 0,
-                    repsTotal: 0,
-                    notas: ''
+                    exerciseName: exerciseData ? exerciseData.name : ej.exerciseId,
+                    orden: ej.orden || ejercicios.length,
+                    series: series
                 });
             }
+        } else {
+            console.log('📭 Workout vacío - sin ejercicios');
         }
         
         const nuevoWorkout = {
             fecha: Timestamp.now(),
             fechaISO: fechaISO,
             rutinaId: rutinaId,
-            nombreRutina: rutina ? rutina.nombre : 'Workout Libre',
+            nombre: rutina ? rutina.nombre : 'Entrenamiento Libre',
             estado: 'en_progreso',
             horaInicio: Timestamp.now(),
             horaFin: null,
             duracion: 0,
             ejercicios: ejercicios,
-            estadisticas: {
+            stats: {
                 volumenTotal: 0,
-                caloriasEstimadas: 0,
                 seriesCompletadas: 0,
                 ejerciciosCompletados: 0
-            },
-            notas: '',
-            ubicacion: ''
+            }
         };
         
+        console.log('💾 Guardando workout en Firestore...');
         await setDoc(workoutRef, nuevoWorkout);
         
-        console.log('✅ Workout iniciado:', workoutRef.id);
+        console.log('✅ Workout guardado exitosamente:', workoutRef.id);
         return workoutRef.id;
     } catch (error) {
         console.error('❌ Error al iniciar workout:', error);
@@ -295,10 +297,11 @@ export async function obtenerWorkoutActivo(userId) {
 export async function obtenerHistorialWorkouts(userId, limite = 20) {
     try {
         const workoutsRef = collection(db, 'users', userId, 'workouts');
+        
+        // Consulta simple sin índice compuesto
         const q = query(
             workoutsRef,
             where('estado', '==', 'completado'),
-            orderBy('fecha', 'desc'),
             limit(limite)
         );
         
@@ -310,6 +313,13 @@ export async function obtenerHistorialWorkouts(userId, limite = 20) {
                 id: doc.id,
                 ...doc.data()
             });
+        });
+        
+        // Ordenar manualmente por fecha
+        workouts.sort((a, b) => {
+            const fechaA = a.fecha?.toDate ? a.fecha.toDate() : new Date(a.fecha || 0);
+            const fechaB = b.fecha?.toDate ? b.fecha.toDate() : new Date(b.fecha || 0);
+            return fechaB - fechaA;
         });
         
         return workouts;
