@@ -418,13 +418,20 @@ function detenerTimerDescanso() {
 // ================================================
 
 async function abrirModalAgregarEjercicio() {
+    console.log('🔍 Abriendo modal de ejercicios...');
+    console.log('📊 Ejercicios disponibles:', ejerciciosDisponibles.length);
+    
     const modal = document.getElementById('modalAddExercise');
-    if (!modal) return;
+    if (!modal) {
+        console.error('❌ Modal no encontrado');
+        return;
+    }
     
     // Renderizar lista de ejercicios
     renderizarListaEjercicios();
     
     modal.classList.add('active');
+    console.log('✅ Modal abierto');
 }
 
 function cerrarModalAgregarEjercicio() {
@@ -436,17 +443,32 @@ function cerrarModalAgregarEjercicio() {
 
 function renderizarListaEjercicios() {
     const container = document.getElementById('exercisesList');
-    if (!container) return;
+    if (!container) {
+        console.error('❌ Container exercisesList no encontrado');
+        return;
+    }
+    
+    console.log('📝 Renderizando', ejerciciosDisponibles.length, 'ejercicios...');
     
     container.innerHTML = '';
     
-    ejerciciosDisponibles.forEach(ejercicio => {
+    if (ejerciciosDisponibles.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--gray-600);">
+                <i class="fas fa-dumbbell" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>No hay ejercicios disponibles</p>
+            </div>
+        `;
+        return;
+    }
+    
+    ejerciciosDisponibles.forEach((ejercicio, index) => {
         const item = document.createElement('div');
         item.className = 'exercise-list-item';
         item.innerHTML = `
             <div class="exercise-list-info">
-                <div class="exercise-list-name">${ejercicio.name}</div>
-                <div class="exercise-list-muscle">${ejercicio.musculo}</div>
+                <div class="exercise-list-name">${ejercicio.name || 'Sin nombre'}</div>
+                <div class="exercise-list-muscle">${ejercicio.musculo || ejercicio.primaryMuscle || 'General'}</div>
             </div>
             <button class="exercise-list-add-btn">
                 <i class="fas fa-plus"></i>
@@ -454,12 +476,24 @@ function renderizarListaEjercicios() {
         `;
         
         const addBtn = item.querySelector('.exercise-list-add-btn');
-        addBtn.addEventListener('click', async () => {
+        addBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await agregarEjercicioAlWorkout(ejercicio);
+        });
+        
+        // También permitir click en toda la card
+        item.addEventListener('click', async () => {
             await agregarEjercicioAlWorkout(ejercicio);
         });
         
         container.appendChild(item);
+        
+        if (index === 0) {
+            console.log('✅ Primer ejercicio renderizado:', ejercicio.name);
+        }
     });
+    
+    console.log('✅ Lista de ejercicios renderizada');
 }
 
 async function agregarEjercicioAlWorkout(ejercicio) {
@@ -693,6 +727,15 @@ function configurarEventListeners() {
         btnCloseExerciseModal.addEventListener('click', cerrarModalAgregarEjercicio);
     }
     
+    // Click en backdrop para cerrar modal de ejercicios
+    const modalAddExercise = document.getElementById('modalAddExercise');
+    if (modalAddExercise) {
+        const backdrop = modalAddExercise.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.addEventListener('click', cerrarModalAgregarEjercicio);
+        }
+    }
+    
     const btnConfirmCancel = document.getElementById('btnConfirmCancel');
     if (btnConfirmCancel) {
         btnConfirmCancel.addEventListener('click', cancelarWorkout);
@@ -708,9 +751,24 @@ function configurarEventListeners() {
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
-            filtrarEjercicios(query);
+            filtrarEjercicios(query, 'all');
         });
     }
+    
+    // Filtros de grupo muscular
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remover active de todos
+            filterBtns.forEach(b => b.classList.remove('active'));
+            // Agregar active al clickeado
+            btn.classList.add('active');
+            
+            const group = btn.dataset.group;
+            const searchQuery = searchInput ? searchInput.value.toLowerCase() : '';
+            filtrarEjercicios(searchQuery, group);
+        });
+    });
     
     // Click en timer para detener
     const restTimerContainer = document.getElementById('restTimerContainer');
@@ -719,19 +777,33 @@ function configurarEventListeners() {
     }
 }
 
-function filtrarEjercicios(query) {
+function filtrarEjercicios(searchQuery = '', muscleGroup = 'all') {
+    console.log('🔍 Filtrando:', { searchQuery, muscleGroup });
+    
     const items = document.querySelectorAll('.exercise-list-item');
+    let visibleCount = 0;
     
     items.forEach(item => {
         const nombre = item.querySelector('.exercise-list-name').textContent.toLowerCase();
         const musculo = item.querySelector('.exercise-list-muscle').textContent.toLowerCase();
         
-        if (nombre.includes(query) || musculo.includes(query)) {
+        // Filtro de búsqueda
+        const matchesSearch = !searchQuery || 
+            nombre.includes(searchQuery) || 
+            musculo.includes(searchQuery);
+        
+        // Filtro de grupo muscular
+        const matchesGroup = muscleGroup === 'all' || musculo.includes(muscleGroup);
+        
+        if (matchesSearch && matchesGroup) {
             item.style.display = 'flex';
+            visibleCount++;
         } else {
             item.style.display = 'none';
         }
     });
+    
+    console.log(`✅ ${visibleCount} ejercicios visibles`);
 }
 
 // ================================================
