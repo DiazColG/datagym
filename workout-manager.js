@@ -854,3 +854,64 @@ export async function obtenerPersonalRecords(userId, limite = 5) {
         return [];
     }
 }
+
+// =========================================
+// BUSCAR HISTORIAL DE EJERCICIO
+// =========================================
+
+/**
+ * Buscar la última vez que el usuario hizo un ejercicio específico
+ * Para pre-cargar datos en workout activo
+ * 
+ * @param {string} userId - ID del usuario
+ * @param {string} exerciseId - ID del ejercicio
+ * @returns {Promise<Object|null>} - Datos del ejercicio de la última vez o null
+ */
+export async function buscarHistorialEjercicio(userId, exerciseId) {
+    try {
+        console.log(`🔍 Buscando historial de ejercicio ${exerciseId}...`);
+        
+        // Obtener workouts completados ordenados por fecha
+        const workoutsRef = collection(db, 'users', userId, 'workouts');
+        const q = query(
+            workoutsRef,
+            where('estado', '==', 'completado'),
+            orderBy('fecha', 'desc'),
+            limit(50) // Buscar en los últimos 50 workouts
+        );
+        
+        const snapshot = await getDocs(q);
+        
+        // Buscar el ejercicio en los workouts
+        for (const docSnap of snapshot.docs) {
+            const workout = docSnap.data();
+            
+            if (!workout.ejercicios) continue;
+            
+            // Buscar si este workout tiene el ejercicio
+            const ejercicio = workout.ejercicios.find(ej => ej.exerciseId === exerciseId);
+            
+            if (ejercicio && ejercicio.series && ejercicio.series.length > 0) {
+                // Encontrado! Retornar solo las series completadas
+                const seriesCompletadas = ejercicio.series.filter(s => s.completada);
+                
+                if (seriesCompletadas.length > 0) {
+                    console.log(`✅ Historial encontrado: ${seriesCompletadas.length} series`);
+                    return {
+                        exerciseId: ejercicio.exerciseId,
+                        exerciseName: ejercicio.exerciseName,
+                        series: seriesCompletadas,
+                        fecha: workout.fecha
+                    };
+                }
+            }
+        }
+        
+        console.log('❌ No se encontró historial para este ejercicio');
+        return null;
+        
+    } catch (error) {
+        console.error('Error al buscar historial de ejercicio:', error);
+        return null;
+    }
+}

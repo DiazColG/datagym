@@ -43,75 +43,63 @@
     </nav>
 
     <main class="main-container">
-        <div class="training-header">
-            <h1><i class="fas fa-fire"></i> Mis Entrenamientos</h1>
-            <p class="subtitle">Selecciona una rutina o inicia un workout rápido</p>
-        </div>
-
-        <div class="action-buttons-row">
-            <button class="btn-quick-workout" id="btnQuickWorkout">
-                <i class="fas fa-bolt"></i>
-                <span>Workout Rápido</span>
-                <small>Sin rutina predefinida</small>
+        <!-- Botón Hero: Iniciar Entrenamiento Vacío -->
+        <div class="hero-start-section">
+            <button class="btn-hero-start" id="btnStartEmptyWorkout">
+                <i class="fas fa-play-circle"></i>
+                COMENZAR ENTRENAMIENTO VACÍO
             </button>
-            <button class="btn-new-routine" id="btnNewRoutine">
-                <i class="fas fa-plus-circle"></i>
-                <span>Nueva Rutina</span>
-                <small>Crear y guardar</small>
-            </button>
+            <p class="hero-subtitle">Inicia rápido y agrega ejercicios sobre la marcha</p>
         </div>
 
-        <div class="weekly-overview" id="weeklyOverview">
-            <h3><i class="fas fa-calendar-week"></i> Esta Semana</h3>
-            <div class="week-stats">
-                <div class="week-stat">
-                    <i class="fas fa-check-circle"></i>
-                    <div>
-                        <strong id="workoutsThisWeek">0</strong>
-                        <span>Entrenamientos</span>
-                    </div>
-                </div>
-                <div class="week-stat">
-                    <i class="fas fa-fire"></i>
-                    <div>
-                        <strong id="caloriesThisWeek">0</strong>
-                        <span>Calorías</span>
-                    </div>
-                </div>
-                <div class="week-stat">
-                    <i class="fas fa-clock"></i>
-                    <div>
-                        <strong id="minutesThisWeek">0</strong>
-                        <span>Minutos</span>
-                    </div>
+        <!-- Sección: Entrenamientos Recientes -->
+        <div class="recent-workouts-section" id="recentWorkoutsSection">
+            <div class="section-header">
+                <h3><i class="fas fa-history"></i> Realizados Recientemente</h3>
+                <span class="section-badge" id="recentCount">0</span>
+            </div>
+            <div class="recent-workouts-grid" id="recentWorkoutsGrid">
+                <div class="loading-placeholder">
+                    <div class="spinner-small"></div>
+                    <span>Cargando...</span>
                 </div>
             </div>
-            <div class="week-calendar" id="weekCalendar"></div>
         </div>
 
-        <div class="routines-section">
-            <div class="section-title">
-                <h2><i class="fas fa-list-ul"></i> Mis Rutinas</h2>
-                <div class="routine-filters">
-                    <button class="filter-btn active" data-filter="all">Todas</button>
-                    <button class="filter-btn" data-filter="favorites">Favoritas</button>
+        <!-- Sección: Plantillas / Mis Rutinas -->
+        <div class="templates-section" id="templatesSection">
+            <div class="section-header">
+                <h3><i class="fas fa-folder"></i> Plantillas</h3>
+                <div class="section-actions">
+                    <span class="section-badge" id="templatesCount">0</span>
+                    <button class="btn-icon" id="btnNewRoutine" title="Nueva rutina">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="btn-icon" id="btnManageRoutines" title="Gestionar rutinas">
+                        <i class="fas fa-cog"></i>
+                    </button>
                 </div>
             </div>
-
-            <div class="routines-container" id="routinesContainer">
-                <div class="loading-state">
-                    <div class="spinner"></div>
-                    <p>Cargando rutinas...</p>
+            <div class="templates-grid" id="templatesGrid">
+                <div class="loading-placeholder">
+                    <div class="spinner-small"></div>
+                    <span>Cargando rutinas...</span>
                 </div>
             </div>
-
-            <div class="empty-routines" id="emptyRoutines" style="display: none;">
+            
+            <!-- Empty State -->
+            <div class="empty-templates" id="emptyTemplates" style="display: none;">
                 <i class="fas fa-clipboard-list"></i>
-                <h3>No tienes rutinas guardadas</h3>
-                <p>Crea tu primera rutina para empezar a entrenar de forma organizada</p>
-                <button class="btn btn-primary" id="btnCreateFirstRoutine">
-                    <i class="fas fa-plus"></i> Crear mi primera rutina
-                </button>
+                <h4>No tienes rutinas guardadas</h4>
+                <p>Crea tu primera rutina o copia una desde Explorar Rutinas</p>
+                <div class="empty-actions">
+                    <button class="btn btn-secondary" id="btnCreateFirstRoutine">
+                        <i class="fas fa-plus"></i> Nueva Rutina
+                    </button>
+                    <a href="explorar-rutinas.html" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Explorar Rutinas
+                    </a>
+                </div>
             </div>
         </div>
     </main>
@@ -121,6 +109,12 @@
             <p>&copy; 2024 DataGym. Desarrollado con <i class="fas fa-heart"></i> para atletas.</p>
         </div>
     </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
 
     <!-- Scripts de Firebase y módulos -->
     <script type="module" src="firebase-config.js"></script>

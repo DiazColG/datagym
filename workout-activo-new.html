@@ -12,10 +12,13 @@
     <!-- Header Fixed -->
     <div class="workout-header-fixed">
         <div class="header-left">
-            <button class="btn-back" id="btnBackToTraining">
+            <button class="btn-back" id="btnBack">
                 <i class="fas fa-chevron-left"></i>
             </button>
-            <div class="workout-timer" id="workoutTimer">0:00</div>
+            <div class="workout-timer" id="workoutTimer">
+                <i class="fas fa-clock"></i>
+                <span id="timerDisplay">0:00</span>
+            </div>
         </div>
         <button class="btn-finish-workout" id="btnFinishWorkout">
             TERMINAR
@@ -33,7 +36,7 @@
         <div class="rest-timer-progress" id="restTimerProgress"></div>
         <div class="rest-timer-info">
             <span class="rest-timer-label">Descanso</span>
-            <span class="rest-timer-countdown" id="restTimerTime">2:00</span>
+            <span class="rest-timer-countdown" id="restTimerCountdown">2:00</span>
         </div>
     </div>
 
@@ -58,12 +61,12 @@
     </main>
 
     <!-- Modal: Seleccionar Ejercicio -->
-    <div class="modal" id="modalAddExercise">
+    <div class="modal" id="modalSelectExercise">
         <div class="modal-backdrop"></div>
         <div class="modal-content modal-select-exercise">
             <div class="modal-header">
                 <h2>Seleccionar Ejercicio</h2>
-                <button class="modal-close" id="btnCloseExerciseModal">
+                <button class="modal-close" id="btnCloseSelectExercise">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -90,7 +93,7 @@
     </div>
 
     <!-- Modal: Confirmar Cancelar -->
-    <div class="modal" id="modalCancelWorkout">
+    <div class="modal" id="modalConfirmCancel">
         <div class="modal-backdrop"></div>
         <div class="modal-content modal-confirm">
             <div class="modal-header">
@@ -99,8 +102,8 @@
             <div class="modal-body">
                 <p>Perderás todo el progreso de este entrenamiento.</p>
                 <div class="modal-actions">
-                    <button class="btn btn-secondary" id="btnKeepWorkout">No, Continuar</button>
-                    <button class="btn btn-danger" id="btnConfirmCancel">Sí, Cancelar</button>
+                    <button class="btn btn-secondary" id="btnConfirmCancelNo">No, Continuar</button>
+                    <button class="btn btn-danger" id="btnConfirmCancelYes">Sí, Cancelar</button>
                 </div>
             </div>
         </div>
@@ -115,7 +118,6 @@
     <!-- Scripts -->
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="exercises-db.js"></script>
-    <script type="module" src="ejercicios-publicos.js"></script>
     <script type="module" src="workout-manager.js"></script>
     <script type="module" src="workout-activo.js"></script>
 </body>
