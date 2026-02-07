@@ -1987,13 +1987,30 @@ export async function ejerciciosYaInicializados() {
  */
 export async function obtenerEjercicios() {
     try {
+        console.log('📚 Intentando cargar ejercicios de Firestore...');
         const exercisesRef = collection(db, 'exercises');
         const snapshot = await getDocs(exercisesRef);
+        
+        console.log('📊 Docs obtenidos de Firestore:', snapshot.size);
         
         const ejercicios = [];
         snapshot.forEach((doc) => {
             ejercicios.push({ id: doc.id, ...doc.data() });
         });
+        
+        // Si Firestore está vacío, usar datos locales
+        if (ejercicios.length === 0) {
+            console.log('⚠️ Firestore vacío, usando EXERCISES_DB local');
+            console.log('📦 Ejercicios locales disponibles:', EXERCISES_DB.length);
+            
+            // Normalizar formato para compatibilidad
+            return EXERCISES_DB.map(ej => ({
+                ...ej,
+                name: ej.nombre || ej.name,
+                musculo: ej.grupoMuscular || ej.musculo,
+                primaryMuscle: ej.grupoMuscular || ej.primaryMuscle
+            }));
+        }
         
         // Ordenar por popularidad y orden
         ejercicios.sort((a, b) => {
@@ -2003,11 +2020,19 @@ export async function obtenerEjercicios() {
             return a.orden - b.orden;
         });
         
+        console.log('✅ Ejercicios cargados de Firestore:', ejercicios.length);
         return ejercicios;
     } catch (error) {
-        console.error('❌ Error al obtener ejercicios:', error);
-        // Fallback a datos locales
-        return EXERCISES_DB;
+        console.error('❌ Error al obtener ejercicios de Firestore:', error);
+        console.log('📦 Fallback a EXERCISES_DB local:', EXERCISES_DB.length, 'ejercicios');
+        
+        // Fallback a datos locales - normalizar formato
+        return EXERCISES_DB.map(ej => ({
+            ...ej,
+            name: ej.nombre || ej.name,
+            musculo: ej.grupoMuscular || ej.musculo,
+            primaryMuscle: ej.grupoMuscular || ej.primaryMuscle
+        }));
     }
 }
 
