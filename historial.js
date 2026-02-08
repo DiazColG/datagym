@@ -164,7 +164,7 @@ function llenarFiltroRutinas() {
     });
 }
 
-function llenarSelectorEjercicios() {
+async function llenarSelectorEjercicios() {
     const ejerciciosUsados = new Set();
     todosLosWorkouts.forEach(workout => {
         workout.ejercicios?.forEach(ej => {
