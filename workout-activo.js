@@ -4,7 +4,7 @@
 
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { doc, getDoc, updateDoc, serverTimestamp, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { doc, getDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { exercisesService } from './exercises-db.js';
 import { buscarHistorialEjercicio } from './workout-manager.js';
 
@@ -304,7 +304,7 @@ async function completarSerie(exerciseIndex, setIndex, rowElement) {
     
     // Marcar como completada
     serie.completada = true;
-    serie.timestamp = serverTimestamp();
+    serie.timestamp = Date.now(); // serverTimestamp() NO funciona dentro de arrays
     
     // Actualizar UI
     rowElement.classList.add('set-row-completed');
@@ -569,7 +569,7 @@ async function guardarWorkoutEnFirestore() {
         
         await updateDoc(workoutRef, {
             ejercicios: ejerciciosDelWorkout,
-            ultimaActualizacion: serverTimestamp()
+            ultimaActualizacion: Date.now()
         });
         
         console.log('💾 Workout guardado en Firestore');
@@ -603,7 +603,7 @@ async function terminarWorkout() {
         const workoutRef = doc(db, 'users', userId, 'workouts', workoutId);
         await updateDoc(workoutRef, {
             estado: 'completado',
-            fechaFin: serverTimestamp(),
+            fechaFin: Date.now(),
             duracion: duracion,
             ejercicios: ejerciciosDelWorkout,
             stats: {
@@ -654,7 +654,7 @@ async function cancelarWorkout() {
         const workoutRef = doc(db, 'users', userId, 'workouts', workoutId);
         await updateDoc(workoutRef, {
             estado: 'cancelado',
-            fechaCancelacion: serverTimestamp()
+            fechaCancelacion: Date.now()
         });
         
         mostrarToast('Entrenamiento cancelado');
