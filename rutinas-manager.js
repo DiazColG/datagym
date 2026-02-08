@@ -498,16 +498,19 @@ export async function obtenerRutinasPublicas(filtros = {}) {
         console.log('📥 Cargando rutinas públicas desde Firestore...');
         
         const rutinasRef = collection(db, 'rutinasPublicas');
-        let q = query(rutinasRef, where('activa', '==', true), orderBy('createdAt', 'desc'));
-        
-        const snapshot = await getDocs(q);
+        // Query simple sin índice compuesto
+        const snapshot = await getDocs(rutinasRef);
         
         const rutinas = [];
         snapshot.forEach((doc) => {
-            rutinas.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const data = doc.data();
+            // Filtrar solo activas en el cliente
+            if (data.activa !== false) {
+                rutinas.push({
+                    id: doc.id,
+                    ...data
+                });
+            }
         });
         
         // Guardar en caché
