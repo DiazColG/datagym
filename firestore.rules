@@ -17,7 +17,8 @@ service cloud.firestore {
     // Rutinas públicas - cualquiera puede leer
     match /rutinasPublicas/{rutinaId} {
       allow read: if true;
-      allow write: if false;
+      // Permitir escritura a usuarios autenticados (para migración y métricas)
+      allow write: if request.auth != null;
     }
     
     // Programas públicos - cualquiera puede leer
