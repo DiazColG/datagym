@@ -5,7 +5,7 @@
 import { auth } from './firebase-config.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { crearRutina, obtenerRutina, actualizarRutina } from './rutinas-manager.js';
-import { EXERCISES_DB, obtenerEjercicioPorId } from './exercises-db.js';
+import { exercisesService } from './exercises-db.js';
 
 let currentUser = null;
 let selectedExercises = [];
@@ -130,34 +130,45 @@ function cerrarModal(modalId) {
 }
 
 // ================================================
-// EJERCICIOS DISPONIBLES
+// EJERCICIOS DISPONIBLES (Usando servicio con caché)
 // ================================================
 
-function renderizarEjerciciosDisponibles(filtro = '') {
+async function renderizarEjerciciosDisponibles(filtro = '') {
     const grid = document.getElementById('exercisesGrid');
-    const ejerciciosFiltrados = filtro 
-        ? EXERCISES_DB.filter(ex => ex.nombre.toLowerCase().includes(filtro.toLowerCase()))
-        : EXERCISES_DB;
+    
+    // Mostrar loading
+    grid.innerHTML = '<div style="text-align:center;padding:20px;">⏳ Cargando ejercicios...</div>';
+    
+    try {
+        // Usar servicio con caché inteligente
+        const ejercicios = await exercisesService.searchExercises(filtro);
+        
+        grid.innerHTML = ejercicios.slice(0, 30).map(ex => `
+            <div class="exercise-option" data-exercise-id="${ex.id}">
+                <h4>${ex.icono} ${ex.nombre}</h4>
+                <p>${ex.grupoMuscular.toUpperCase()} - ${ex.equipamiento}</p>
+            </div>
+        `).join('');
 
-    grid.innerHTML = ejerciciosFiltrados.slice(0, 30).map(ex => `
-        <div class="exercise-option" data-exercise-id="${ex.id}">
-            <h4>${ex.icono} ${ex.nombre}</h4>
-            <p>${ex.grupoMuscular.toUpperCase()} - ${ex.equipamiento}</p>
-        </div>
-    `).join('');
-
-    grid.querySelectorAll('.exercise-option').forEach(el => {
-        el.addEventListener('click', () => seleccionarEjercicio(el.dataset.exerciseId));
-    });
+        grid.querySelectorAll('.exercise-option').forEach(el => {
+            el.addEventListener('click', () => seleccionarEjercicio(el.dataset.exerciseId));
+        });
+    } catch (error) {
+        console.error('Error cargando ejercicios:', error);
+        grid.innerHTML = '<div style="text-align:center;padding:20px;color:red;">❌ Error cargando ejercicios</div>';
+    }
 }
 
 function buscarEjercicios(e) {
     renderizarEjerciciosDisponibles(e.target.value);
 }
 
-function seleccionarEjercicio(exerciseId) {
+async function seleccionarEjercicio(exerciseId) {
     cerrarModal('modalSelectExercise');
     editingExerciseIndex = null;
+    
+    // Obtener ejercicio del servicio
+    const ejercicio = await exercisesService.getExerciseById(exerciseId);
     document.getElementById('exerciseSets').value = 3;
     document.getElementById('exerciseReps').value = '8-12';
     document.getElementById('exerciseRest').value = 60;
@@ -210,8 +221,10 @@ function renderExercisesList() {
     }
 
     lista.innerHTML = selectedExercises.map((ex, idx) => {
-        const ejercicio = EXERCISES_DB.find(e => e.id === ex.exerciseId);
-        if (!ejercicio) return '';
+        // Usar EXERCISES_DB directamente (bundle estático) para renderizado rápido
+        // No necesitamos async aquí porque ya tenemos los IDs guardados
+        const ejercicio = exercisesService.memoryCache.exercises?.find(e => e.id === ex.exerciseId) 
+                       || { nombre: ex.exerciseId, icono: '💪', grupoMuscular: 'N/A' };
         
         return `
             <div class="exercise-item">

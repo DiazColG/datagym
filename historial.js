@@ -6,21 +6,37 @@
 import { auth } from './firebase-config.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { obtenerHistorialWorkouts, obtenerWorkoutsConEjercicio, obtenerProgresoEjercicio } from './workout-manager.js';
-import { obtenerEjercicioPorId, EXERCISES_DB } from './exercises-db.js';
+import { exercisesService } from './exercises-db.js';
 
 let usuarioActual = null;
 let todosLosWorkouts = [];
 let workoutsFiltrados = [];
 let chartPeso = null;
 let chartVolumen = null;
+let ejerciciosCache = []; // Caché de ejercicios para uso sincrónico
+
+// ================================================
+// HELPER: Obtener ejercicio de caché
+// ================================================
+function obtenerEjercicioPorId(id) {
+    return ejerciciosCache.find(e => e.id === id);
+}
 
 // ================================================
 // INICIALIZACIÓN
 // ================================================
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     configurarNavegacion();
     configurarEventos();
+    
+    // Pre-cargar ejercicios al inicio (con caché)
+    try {
+        ejerciciosCache = await exercisesService.getExercises();
+        console.log('✅ Ejercicios precargados:', ejerciciosCache.length);
+    } catch (error) {
+        console.error('Error precargando ejercicios:', error);
+    }
     
     onAuthStateChanged(auth, (usuario) => {
         if (usuario) {
@@ -159,8 +175,11 @@ function llenarSelectorEjercicios() {
     const select = document.getElementById('ejercicioGrafico');
     select.innerHTML = '<option value="">Selecciona un ejercicio</option>';
     
+    // Cargar ejercicios async
+    const ejercicios = await exercisesService.getExercises();
+    
     Array.from(ejerciciosUsados).forEach(exerciseId => {
-        const ejercicio = obtenerEjercicioPorId(exerciseId);
+        const ejercicio = ejercicios.find(e => e.id === exerciseId);
         if (ejercicio) {
             const option = document.createElement('option');
             option.value = exerciseId;

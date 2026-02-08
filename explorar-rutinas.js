@@ -11,7 +11,7 @@ import {
     obtenerRutinasPopulares 
 } from './rutinas-publicas.js';
 import { copiarRutinaPublica } from './rutinas-manager.js';
-import { obtenerEjercicioPorId } from './exercises-db.js';
+import { exercisesService } from './exercises-db.js';
 
 // ================================================
 // ESTADO GLOBAL
@@ -26,6 +26,12 @@ let filtrosActivos = {
 };
 let rutinasCopiadas = [];
 let rutinaSeleccionada = null;
+let ejerciciosCache = []; // Caché local para acceso sincrónico
+
+// Helper para obtener ejercicio de caché
+function obtenerEjercicioPorId(id) {
+    return ejerciciosCache.find(e => e.id === id);
+}
 
 // ================================================
 // INICIALIZACIÓN
@@ -41,6 +47,14 @@ onAuthStateChanged(auth, (user) => {
 });
 
 async function inicializarApp() {
+    // Pre-cargar ejercicios con caché
+    try {
+        ejerciciosCache = await exercisesService.getExercises();
+        console.log('✅ Ejercicios precargados:', ejerciciosCache.length);
+    } catch (error) {
+        console.error('Error precargando ejercicios:', error);
+    }
+    
     configurarEventos();
     await cargarRutinasCopiadas();
     renderizarRutinas();
