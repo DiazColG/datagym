@@ -6,6 +6,7 @@ import { auth } from './firebase-config.js';
 import { onAuthChange } from './auth.js';
 import { guardarPerfilCompleto } from './profile-manager.js';
 import { calcularEdad, calcularIMC } from './profile-calculator.js';
+import { saveWeightProfile, recordWeight } from './weight-manager.js';
 
 // =========================================
 // VARIABLES GLOBALES
@@ -416,8 +417,20 @@ async function finalizarOnboarding() {
         
         console.log('Guardando perfil:', datosCompletos);
         
-        // Guardar en Firestore
+        // 1. Guardar perfil completo en profile/info
         await guardarPerfilCompleto(userId, datosCompletos);
+        
+        // 2. Inicializar weight profile para "Mi Progreso"
+        console.log('Inicializando weight profile...');
+        await saveWeightProfile(userId, {
+            heightCm: formData.altura,
+            initialWeight: formData.pesoActual,
+            goalWeight: formData.pesoObjetivo
+        });
+        
+        // 3. Registrar peso inicial como primer registro
+        console.log('Registrando peso inicial...');
+        await recordWeight(userId, formData.pesoActual);
         
         // Mostrar mensaje de éxito
         mostrarExito('¡Perfil creado exitosamente!');
