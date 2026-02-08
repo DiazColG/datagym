@@ -6,7 +6,7 @@ import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { doc, getDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { exercisesService } from './exercises-db.js';
-import { buscarHistorialEjercicio } from './workout-manager.js';
+import { buscarHistorialEjercicio, invalidarCacheStats } from './workout-manager.js';
 
 // ================================================
 // ESTADO GLOBAL
@@ -619,6 +619,9 @@ async function terminarWorkout() {
             series: totalSeries,
             volumen: totalVolumen
         });
+        
+        // Invalidar caché de stats para que se recalculen en dashboard
+        invalidarCacheStats(userId);
         
         mostrarToast('¡Entrenamiento completado!');
         

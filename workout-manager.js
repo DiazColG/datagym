@@ -705,22 +705,50 @@ export async function obtenerProgresoEjercicio(userId, exerciseId) {
 
 /**
  * Calcula la racha de días consecutivos con entrenamiento
+ * OPTIMIZADO: Usa caché de 24h + límite de 60 días
  * 
  * @param {string} userId - ID del usuario
+ * @param {boolean} forceRefresh - Forzar recalcular ignorando caché
  * @returns {Promise<number>} - Número de días consecutivos
  */
-export async function calcularStreak(userId) {
+export async function calcularStreak(userId, forceRefresh = false) {
     try {
+        // Verificar caché (válido por 24 horas)
+        if (!forceRefresh) {
+            const cached = localStorage.getItem(`streak_${userId}`);
+            if (cached) {
+                const { valor, timestamp } = JSON.parse(cached);
+                const edad = Date.now() - timestamp;
+                const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas
+                
+                if (edad < CACHE_TTL) {
+                    console.log('✅ Streak cargado desde caché');
+                    return valor;
+                }
+            }
+        }
+        
+        console.log('🔄 Calculando streak desde Firestore...');
+        
+        // Query optimizada: solo últimos 60 días
+        const hace60Dias = new Date();
+        hace60Dias.setDate(hace60Dias.getDate() - 60);
+        
         const q = query(
             collection(db, 'users', userId, 'workouts'),
             where('estado', '==', 'completado'),
-            orderBy('fecha', 'desc'),
-            limit(365) // Revisar último año
+            where('fecha', '>=', hace60Dias),
+            orderBy('fecha', 'desc')
         );
         
         const snapshot = await getDocs(q);
         
         if (snapshot.empty) {
+            // Guardar en caché
+            localStorage.setItem(`streak_${userId}`, JSON.stringify({
+                valor: 0,
+                timestamp: Date.now()
+            }));
             return 0;
         }
         
@@ -736,6 +764,8 @@ export async function calcularStreak(userId) {
                 fechaISO = fecha.split('T')[0];
             } else if (fecha instanceof Date) {
                 fechaISO = fecha.toISOString().split('T')[0];
+            } else if (typeof fecha === 'number') {
+                fechaISO = new Date(fecha).toISOString().split('T')[0];
             }
             
             if (fechaISO) fechasSet.add(fechaISO);
@@ -762,9 +792,26 @@ export async function calcularStreak(userId) {
             }
         }
         
+        // Guardar en caché
+        localStorage.setItem(`streak_${userId}`, JSON.stringify({
+            valor: streak,
+            timestamp: Date.now()
+        }));
+        
+        console.log(`✅ Streak calculado: ${streak} días`);
         return streak;
+        
     } catch (error) {
         console.error('❌ Error al calcular streak:', error);
+        
+        // Si hay error, intentar devolver del caché aunque esté expirado
+        const cached = localStorage.getItem(`streak_${userId}`);
+        if (cached) {
+            const { valor } = JSON.parse(cached);
+            console.log('⚠️ Usando caché expirado por error');
+            return valor;
+        }
+        
         return 0;
     }
 }
@@ -775,23 +822,50 @@ export async function calcularStreak(userId) {
 
 /**
  * Obtiene los mejores records personales del usuario
+ * OPTIMIZADO: Usa caché de 24h + límite de 50 workouts
  * 
  * @param {string} userId - ID del usuario
  * @param {number} limite - Número de PRs a obtener
+ * @param {boolean} forceRefresh - Forzar recalcular ignorando caché
  * @returns {Promise<Array>} - Array de PRs
  */
-export async function obtenerPersonalRecords(userId, limite = 5) {
+export async function obtenerPersonalRecords(userId, limite = 5, forceRefresh = false) {
     try {
+        // Verificar caché (válido por 24 horas)
+        if (!forceRefresh) {
+            const cacheKey = `prs_${userId}_${limite}`;
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+                const { valor, timestamp } = JSON.parse(cached);
+                const edad = Date.now() - timestamp;
+                const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas
+                
+                if (edad < CACHE_TTL) {
+                    console.log('✅ PRs cargados desde caché');
+                    return valor;
+                }
+            }
+        }
+        
+        console.log('🔄 Calculando PRs desde Firestore...');
+        
+        // Query optimizada: solo últimos 50 workouts (más recientes y relevantes)
         const q = query(
             collection(db, 'users', userId, 'workouts'),
             where('estado', '==', 'completado'),
             orderBy('fecha', 'desc'),
-            limit(100) // Analizar últimos 100 workouts
+            limit(50)
         );
         
         const snapshot = await getDocs(q);
         
         if (snapshot.empty) {
+            // Guardar en caché
+            const cacheKey = `prs_${userId}_${limite}`;
+            localStorage.setItem(cacheKey, JSON.stringify({
+                valor: [],
+                timestamp: Date.now()
+            }));
             return [];
         }
         
@@ -816,12 +890,17 @@ export async function obtenerPersonalRecords(userId, limite = 5) {
                     let valor = 0;
                     
                     // Calcular valor según tipo de medición
-                    if (ej.tipoMedicion === 'peso') {
-                        valor = (serie.peso || 0) * (serie.reps || 1);
-                    } else if (ej.tipoMedicion === 'reps') {
-                        valor = serie.reps || 0;
-                    } else if (ej.tipoMedicion === 'tiempo') {
-                        valor = serie.tiempo || 0;
+                    // Por defecto asumimos peso si no está especificado
+                    const peso = serie.peso || 0;
+                    const reps = serie.reps || 0;
+                    const tiempo = serie.tiempo || 0;
+                    
+                    if (tiempo > 0) {
+                        valor = tiempo; // ejercicios de tiempo (plancha, etc)
+                    } else if (peso > 0 && reps > 0) {
+                        valor = peso * reps; // ejercicios con peso
+                    } else if (reps > 0) {
+                        valor = reps; // ejercicios sin peso (flexiones, etc)
                     }
                     
                     if (valor > mejorValor) {
@@ -841,9 +920,8 @@ export async function obtenerPersonalRecords(userId, limite = 5) {
                 if (!recordActual || mejorValor > recordActual.valor) {
                     recordsPorEjercicio.set(ej.exerciseId, {
                         exerciseId: ej.exerciseId,
-                        exerciseName: ej.exerciseName,
-                        grupoMuscular: ej.grupoMuscular,
-                        tipoMedicion: ej.tipoMedicion,
+                        exerciseName: ej.exerciseName || 'Sin nombre',
+                        grupoMuscular: ej.grupoMuscular || 'General',
                         valor: mejorValor,
                         serie: mejorSerie,
                         fecha: workout.fecha
@@ -857,10 +935,28 @@ export async function obtenerPersonalRecords(userId, limite = 5) {
             .sort((a, b) => b.valor - a.valor)
             .slice(0, limite);
         
+        // Guardar en caché
+        const cacheKey = `prs_${userId}_${limite}`;
+        localStorage.setItem(cacheKey, JSON.stringify({
+            valor: records,
+            timestamp: Date.now()
+        }));
+        
+        console.log(`✅ ${records.length} PRs calculados`);
         return records;
         
     } catch (error) {
         console.error('❌ Error al obtener personal records:', error);
+        
+        // Si hay error, intentar devolver del caché aunque esté expirado
+        const cacheKey = `prs_${userId}_${limite}`;
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+            const { valor } = JSON.parse(cached);
+            console.log('⚠️ Usando caché expirado por error');
+            return valor;
+        }
+        
         return [];
     }
 }
@@ -923,5 +1019,26 @@ export async function buscarHistorialEjercicio(userId, exerciseId) {
     } catch (error) {
         console.error('Error al buscar historial de ejercicio:', error);
         return null;
+    }
+}
+
+// =========================================
+// UTILIDADES DE CACHÉ
+// =========================================
+
+/**
+ * Invalida el caché de streak y PRs cuando se completa un workout
+ * Debe llamarse desde workout-activo.js al terminar entrenamiento
+ * 
+ * @param {string} userId - ID del usuario
+ */
+export function invalidarCacheStats(userId) {
+    try {
+        localStorage.removeItem(`streak_${userId}`);
+        localStorage.removeItem(`prs_${userId}_4`);
+        localStorage.removeItem(`prs_${userId}_5`);
+        console.log('✅ Caché de stats invalidado - se recalculará en próxima carga');
+    } catch (error) {
+        console.error('Error al invalidar caché:', error);
     }
 }
