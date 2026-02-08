@@ -388,7 +388,6 @@ async function mostrarResumen() {
         
         document.getElementById('summaryCalorias').textContent = perfil.caloriasObjetivo;
         document.getElementById('summaryProteinas').textContent = perfil.proteinasObjetivo;
-        document.getElementById('summaryAgua').textContent = perfil.aguaObjetivo.vasos;
     } catch (error) {
         console.error('Error al calcular objetivos:', error);
     }

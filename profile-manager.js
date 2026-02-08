@@ -59,7 +59,6 @@ export async function guardarPerfilCompleto(userId, datos) {
             tdee: calculosNutricionales.tdee,
             caloriasObjetivo: calculosNutricionales.caloriasObjetivo,
             proteinasObjetivo: calculosNutricionales.proteinasObjetivo,
-            aguaObjetivo: calculosNutricionales.aguaObjetivo,
             
             // Preferencias
             unidadPeso: datos.unidadPeso || 'kg',
@@ -174,7 +173,6 @@ export async function actualizarDatosPerfil(userId, datos) {
                 tdee: calculosNutricionales.tdee,
                 caloriasObjetivo: calculosNutricionales.caloriasObjetivo,
                 proteinasObjetivo: calculosNutricionales.proteinasObjetivo,
-                aguaObjetivo: calculosNutricionales.aguaObjetivo,
                 objetivoSemanal: calculosNutricionales.objetivoSemanal
             };
         }
@@ -260,14 +258,12 @@ export function obtenerObjetivosDiarios(perfil) {
     if (!perfil || !perfil.perfilCompleto) {
         return {
             calorias: 2000,
-            proteinas: 150,
-            agua: { vasos: 8, litros: 2.0 }
+            proteinas: 150
         };
     }
     
     return {
         calorias: perfil.caloriasObjetivo,
-        proteinas: perfil.proteinasObjetivo,
-        agua: perfil.aguaObjetivo
+        proteinas: perfil.proteinasObjetivo
     };
 }

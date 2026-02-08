@@ -135,41 +135,6 @@ export function calcularProteinas(peso, nivelActividad) {
 }
 
 /**
- * Calcula el consumo diario recomendado de agua
- * Base: 35 ml por kg de peso corporal
- * Ajuste: +500ml por nivel de actividad moderado/alto
- * Nota: 1 vaso = 250ml (estándar usado en esta aplicación)
- * 
- * @param {number} peso - Peso en kilogramos
- * @param {string} nivelActividad - Nivel de actividad física
- * @returns {Object} { litros, mililitros, vasos }
- */
-export function calcularAgua(peso, nivelActividad) {
-    if (!peso || !nivelActividad) {
-        throw new Error('Peso y nivel de actividad son requeridos');
-    }
-    
-    // Base: 35 ml por kg
-    let mililitros = peso * 35;
-    
-    // Ajuste por actividad
-    if (nivelActividad === 'activo' || nivelActividad === 'muyActivo') {
-        mililitros += 500; // +500ml para actividad intensa
-    } else if (nivelActividad === 'moderado') {
-        mililitros += 250; // +250ml para actividad moderada
-    }
-    
-    const litros = mililitros / 1000;
-    const vasos = Math.ceil(mililitros / 250); // 1 vaso = 250ml
-    
-    return {
-        litros: Math.round(litros * 10) / 10, // Redondear a 1 decimal
-        mililitros: Math.round(mililitros),
-        vasos: vasos
-    };
-}
-
-/**
  * Calcula el Índice de Masa Corporal (IMC)
  * IMC = peso (kg) / altura² (m)
  * 
@@ -302,9 +267,6 @@ export function calcularPerfilCompleto(datos) {
         // Calcular proteínas
         const proteinasObjetivo = calcularProteinas(peso, nivelActividad);
         
-        // Calcular agua
-        const aguaObjetivo = calcularAgua(peso, nivelActividad);
-        
         // Calcular objetivo semanal
         const objetivoSemanal = calcularObjetivoSemanal(objetivoPrincipal);
         
@@ -317,7 +279,6 @@ export function calcularPerfilCompleto(datos) {
             tdee,
             caloriasObjetivo,
             proteinasObjetivo,
-            aguaObjetivo,
             objetivoSemanal
         };
     } catch (error) {
