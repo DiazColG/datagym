@@ -58,3 +58,11 @@ try {
 
 // Exportar instancias para uso en otros módulos
 export { auth, db, app };
+
+// Exponer en window para scripts de consola (migraciones, debugging)
+if (typeof window !== 'undefined') {
+    window.db = db;
+    window.auth = auth;
+    window.app = app;
+    console.log('✅ Firebase expuesto en window (db, auth, app)');
+}
