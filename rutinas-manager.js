@@ -15,9 +15,51 @@ import {
     query,
     where,
     orderBy,
+    limit,
     Timestamp,
     increment
 } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// =========================================
+// CACHÉ PARA RUTINAS PÚBLICAS
+// =========================================
+
+const CACHE_KEY_ROUTINES = 'datagym_public_routines';
+const CACHE_TTL_ROUTINES = 5 * 60 * 1000; // 5 minutos
+
+function guardarEnCache(data) {
+    const cacheData = {
+        data,
+        timestamp: Date.now()
+    };
+    localStorage.setItem(CACHE_KEY_ROUTINES, JSON.stringify(cacheData));
+}
+
+function obtenerDeCache() {
+    try {
+        const cached = localStorage.getItem(CACHE_KEY_ROUTINES);
+        if (!cached) return null;
+        
+        const { data, timestamp } = JSON.parse(cached);
+        const edad = Date.now() - timestamp;
+        
+        if (edad < CACHE_TTL_ROUTINES) {
+            console.log(`✅ Rutinas públicas desde caché (${Math.round(edad/1000)}s)`);            return data;
+        }
+        
+        // Caché expirado
+        localStorage.removeItem(CACHE_KEY_ROUTINES);
+        return null;
+    } catch (error) {
+        console.error('Error leyendo caché:', error);
+        return null;
+    }
+}
+
+export function invalidarCacheRutinasPublicas() {
+    localStorage.removeItem(CACHE_KEY_ROUTINES);
+    console.log('🗑️ Caché de rutinas públicas invalidado');
+}
 
 // =========================================
 // CREAR RUTINA
@@ -436,6 +478,170 @@ export function calcularDuracionEstimada(rutina) {
 }
 
 // =========================================
+// RUTINAS PÚBLICAS - FIRESTORE
+// =========================================
+
+/**
+ * Obtener todas las rutinas públicas de Firestore con caché
+ * 
+ * @param {Object} filtros - Filtros opcionales
+ * @returns {Promise<Array>} - Array de rutinas públicas
+ */
+export async function obtenerRutinasPublicas(filtros = {}) {
+    try {
+        // Intentar obtener de caché
+        const cached = obtenerDeCache();
+        if (cached && !filtros.forzarRecarga) {
+            return aplicarFiltrosLocales(cached, filtros);
+        }
+        
+        console.log('📥 Cargando rutinas públicas desde Firestore...');
+        
+        const rutinasRef = collection(db, 'rutinasPublicas');
+        let q = query(rutinasRef, where('activa', '==', true), orderBy('createdAt', 'desc'));
+        
+        const snapshot = await getDocs(q);
+        
+        const rutinas = [];
+        snapshot.forEach((doc) => {
+            rutinas.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        // Guardar en caché
+        guardarEnCache(rutinas);
+        
+        console.log(`✅ ${rutinas.length} rutinas públicas cargadas`);
+        
+        return aplicarFiltrosLocales(rutinas, filtros);
+    } catch (error) {
+        console.error('❌ Error al obtener rutinas públicas:', error);
+        // Intentar devolver caché aunque esté expirado
+        const cached = localStorage.getItem(CACHE_KEY_ROUTINES);
+        if (cached) {
+            console.log('⚠️ Devolviendo caché expirado como fallback');
+            return JSON.parse(cached).data || [];
+        }
+        return [];
+    }
+}
+
+/**
+ * Aplicar filtros a rutinas ya cargadas
+ */
+function aplicarFiltrosLocales(rutinas, filtros) {
+    let resultado = [...rutinas];
+    
+    if (filtros.nivel && filtros.nivel !== 'todos') {
+        resultado = resultado.filter(r => r.nivel === filtros.nivel);
+    }
+    
+    if (filtros.objetivo && filtros.objetivo !== 'todos') {
+        resultado = resultado.filter(r => r.objetivo === filtros.objetivo);
+    }
+    
+    if (filtros.dias && filtros.dias !== 'todos') {
+        const dias = parseInt(filtros.dias);
+        resultado = resultado.filter(r => r.diasSemana === dias);
+    }
+    
+    if (filtros.destacada) {
+        resultado = resultado.filter(r => r.destacada);
+    }
+    
+    if (filtros.busqueda) {
+        const termino = filtros.busqueda.toLowerCase();
+        resultado = resultado.filter(r =>
+            r.nombre.toLowerCase().includes(termino) ||
+            r.descripcion.toLowerCase().includes(termino)
+        );
+    }
+    
+    return resultado;
+}
+
+/**
+ * Obtener una rutina pública específica
+ * 
+ * @param {string} rutinaId - ID de la rutina pública
+ * @returns {Promise<Object|null>} - Datos de la rutina
+ */
+export async function obtenerRutinaPublica(rutinaId) {
+    try {
+        const rutinaRef = doc(db, 'rutinasPublicas', rutinaId);
+        const rutinaSnap = await getDoc(rutinaRef);
+        
+        if (rutinaSnap.exists()) {
+            return {
+                id: rutinaSnap.id,
+                ...rutinaSnap.data()
+            };
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('❌ Error al obtener rutina pública:', error);
+        return null;
+    }
+}
+
+/**
+ * Incrementar métrica de una rutina pública
+ * 
+ * @param {string} rutinaId - ID de la rutina pública
+ * @param {string} metrica - 'likes', 'vistas' o 'copias'
+ * @returns {Promise<boolean>}
+ */
+export async function incrementarMetricaRutina(rutinaId, metrica) {
+    try {
+        const rutinaRef = doc(db, 'rutinasPublicas', rutinaId);
+        
+        const actualizacion = {
+            [metrica]: increment(1),
+            updatedAt: Timestamp.now()
+        };
+        
+        await updateDoc(rutinaRef, actualizacion);
+        
+        console.log(`✅ ${metrica} incrementada para rutina ${rutinaId}`);
+        
+        // Invalidar caché para reflejar cambios
+        invalidarCacheRutinasPublicas();
+        
+        return true;
+    } catch (error) {
+        console.error(`❌ Error al incrementar ${metrica}:`, error);
+        return false;
+    }
+}
+
+/**
+ * Obtener rutinas más populares (por likes + copias)
+ * 
+ * @param {number} limite - Cantidad de rutinas a devolver
+ * @returns {Promise<Array>}
+ */
+export async function obtenerRutinasPopulares(limite = 6) {
+    try {
+        const rutinas = await obtenerRutinasPublicas();
+        
+        // Ordenar por score = likes * 2 + copias * 3 + vistas
+        return rutinas
+            .map(r => ({
+                ...r,
+                popularityScore: (r.likes || 0) * 2 + (r.copias || 0) * 3 + (r.vistas || 0)
+            }))
+            .sort((a, b) => b.popularityScore - a.popularityScore)
+            .slice(0, limite);
+    } catch (error) {
+        console.error('❌ Error al obtener rutinas populares:', error);
+        return [];
+    }
+}
+
+// =========================================
 // COPIAR RUTINA PÚBLICA
 // =========================================
 
@@ -472,6 +678,13 @@ export async function copiarRutinaPublica(userId, rutinaPublica) {
         };
         
         const rutinaId = await crearRutina(userId, rutinaCopia);
+        
+        // Incrementar contador de copias en la rutina pública
+        if (rutinaPublica.id) {
+            await incrementarMetricaRutina(rutinaPublica.id, 'copias').catch(err => {
+                console.warn('⚠️ No se pudo incrementar contador de copias:', err);
+            });
+        }
         
         console.log('✅ Rutina pública copiada exitosamente:', rutinaId);
         return rutinaId;

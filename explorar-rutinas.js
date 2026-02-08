@@ -2,15 +2,15 @@
 // EXPLORAR RUTINAS - Lógica Principal
 // ================================================
 
-import { auth } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { 
-    RUTINAS_PUBLICAS,
-    filtrarRutinasPublicas,
+    obtenerRutinasPublicas,
     obtenerRutinaPublica,
-    obtenerRutinasPopulares 
-} from './rutinas-publicas.js';
-import { copiarRutinaPublica } from './rutinas-manager.js';
+    obtenerRutinasPopulares,
+    incrementarMetricaRutina,
+    copiarRutinaPublica 
+} from './rutinas-manager.js';
 import { exercisesService } from './exercises-db.js';
 
 // ================================================
@@ -18,6 +18,7 @@ import { exercisesService } from './exercises-db.js';
 // ================================================
 
 let currentUser = null;
+let rutinasPublicas = []; // Rutinas cargadas desde Firestore
 let filtrosActivos = {
     nivel: 'todos',
     objetivo: 'todos',
@@ -53,6 +54,18 @@ async function inicializarApp() {
         console.log('✅ Ejercicios precargados:', ejerciciosCache.length);
     } catch (error) {
         console.error('Error precargando ejercicios:', error);
+    }
+    
+    // Cargar rutinas públicas desde Firestore
+    try {
+        mostrarCargando(true);
+        rutinasPublicas = await obtenerRutinasPublicas();
+        console.log('✅ Rutinas públicas cargadas:', rutinasPublicas.length);
+    } catch (error) {
+        console.error('Error cargando rutinas públicas:', error);
+        mostrarError('Error al cargar rutinas. Por favor recarga la página.');
+    } finally {
+        mostrarCargando(false);
     }
     
     configurarEventos();
@@ -138,8 +151,30 @@ function renderizarRutinas() {
     const grid = document.getElementById('rutinasGrid');
     const emptyState = document.getElementById('emptyState');
     
-    // Aplicar filtros
-    const rutinas = filtrarRutinasPublicas(filtrosActivos);
+    // Aplicar filtros a las rutinas cargadas desde Firestore
+    let rutinas = [...rutinasPublicas];
+    
+    // Filtros locales
+    if (filtrosActivos.nivel && filtrosActivos.nivel !== 'todos') {
+        rutinas = rutinas.filter(r => r.nivel === filtrosActivos.nivel);
+    }
+    
+    if (filtrosActivos.objetivo && filtrosActivos.objetivo !== 'todos') {
+        rutinas = rutinas.filter(r => r.objetivo === filtrosActivos.objetivo);
+    }
+    
+    if (filtrosActivos.dias && filtrosActivos.dias !== 'todos') {
+        const dias = parseInt(filtrosActivos.dias);
+        rutinas = rutinas.filter(r => r.diasSemana === dias);
+    }
+    
+    if (filtrosActivos.busqueda) {
+        const termino = filtrosActivos.busqueda.toLowerCase();
+        rutinas = rutinas.filter(r =>
+            r.nombre.toLowerCase().includes(termino) ||
+            r.descripcion.toLowerCase().includes(termino)
+        );
+    }
     
     // Mostrar empty state si no hay resultados
     if (rutinas.length === 0) {
@@ -173,8 +208,13 @@ function renderizarRutinas() {
 
 function crearRutinaCard(rutina) {
     const estaCopiada = rutinasCopiadas.includes(rutina.id);
-    const popularBadge = rutina.popular ? '<span class="badge badge-popular">⭐ Popular</span>' : '';
+    const popularBadge = rutina.destacada ? '<span class="badge badge-popular">⭐ Popular</span>' : '';
     const copiadaBadge = estaCopiada ? '<span class="badge badge-copied">✓ Guardada</span>' : '';
+    
+    // Métricas reales de Firestore
+    const likes = rutina.likes || 0;
+    const vistas = rutina.vistas || 0;
+    const copias = rutina.copias || 0;
     
     return `
         <div class="rutina-card" data-rutina-id="${rutina.id}" style="border-left: 4px solid ${rutina.color}">
@@ -220,6 +260,10 @@ function crearRutinaCard(rutina) {
                         <span class="stat-mini-number">${calcularSeriesTotales(rutina)}</span>
                         <span class="stat-mini-label">Series</span>
                     </div>
+                    <div class="stat-mini" title="${copias} copias">
+                        <span class="stat-mini-number">${formatearNumero(copias)}</span>
+                        <span class="stat-mini-label">📋 Copias</span>
+                    </div>
                 </div>
             </div>
             
@@ -246,8 +290,13 @@ function crearRutinaCard(rutina) {
 // ================================================
 
 function mostrarDetalleRutina(rutinaId) {
-    rutinaSeleccionada = obtenerRutinaPublica(rutinaId);
+    rutinaSeleccionada = rutinasPublicas.find(r => r.id === rutinaId);
     if (!rutinaSeleccionada) return;
+    
+    // Incrementar vistas de forma asíncrona (sin esperar)
+    incrementarMetricaRutina(rutinaId, 'vistas').catch(err => {
+        console.warn('⚠️ No se pudo incrementar vistas:', err);
+    });
     
     const estaCopiada = rutinasCopiadas.includes(rutinaSeleccionada.id);
     
@@ -520,8 +569,11 @@ function resetearFiltros() {
 // ================================================
 
 function actualizarEstadisticas() {
-    document.getElementById('totalRutinas').textContent = RUTINAS_PUBLICAS.length;
-    document.getElementById('popularRutinas').textContent = obtenerRutinasPopulares().length;
+    document.getElementById('totalRutinas').textContent = rutinasPublicas.length;
+    
+    const populares = rutinasPublicas.filter(r => r.destacada).length;
+    document.getElementById('popularRutinas').textContent = populares;
+    
     document.getElementById('copiedRutinas').textContent = rutinasCopiadas.length;
 }
 
@@ -540,6 +592,25 @@ function calcularTiempoEstimado(rutina) {
 function capitalizar(str) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function formatearNumero(num) {
+    if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
+}
+
+function mostrarCargando(mostrar) {
+    const grid = document.getElementById('rutinasGrid');
+    if (mostrar) {
+        grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">Cargando rutinas...</div>';
+    }
+}
+
+function mostrarError(mensaje) {
+    const grid = document.getElementById('rutinasGrid');
+    grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #ef4444;">${mensaje}</div>`;
 }
 
 function obtenerColorGrupo(grupo) {
