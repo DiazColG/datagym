@@ -470,8 +470,8 @@ function renderizarListaEjercicios() {
         item.className = 'exercise-list-item';
         item.innerHTML = `
             <div class="exercise-list-info">
-                <div class="exercise-list-name">${ejercicio.name || 'Sin nombre'}</div>
-                <div class="exercise-list-muscle">${ejercicio.musculo || ejercicio.primaryMuscle || 'General'}</div>
+                <div class="exercise-list-name">${ejercicio.icono || '💪'} ${ejercicio.nombre || ejercicio.name || 'Sin nombre'}</div>
+                <div class="exercise-list-muscle">${ejercicio.grupoMuscular?.toUpperCase() || ejercicio.musculo?.toUpperCase() || 'GENERAL'}</div>
             </div>
             <button class="exercise-list-add-btn">
                 <i class="fas fa-plus"></i>
@@ -492,7 +492,7 @@ function renderizarListaEjercicios() {
         container.appendChild(item);
         
         if (index === 0) {
-            console.log('✅ Primer ejercicio renderizado:', ejercicio.name);
+            console.log('✅ Primer ejercicio renderizado:', ejercicio.nombre || ejercicio.name);
         }
     });
     
@@ -536,11 +536,11 @@ async function agregarEjercicioAlWorkout(ejercicio) {
         // Agregar al workout
         ejerciciosDelWorkout.push({
             exerciseId: ejercicio.id,
-            exerciseName: ejercicio.name,
+            exerciseName: ejercicio.nombre || ejercicio.name,
             series: seriesIniciales
         });
         
-        console.log(`✅ Ejercicio agregado: ${ejercicio.name}`);
+        console.log(`✅ Ejercicio agregado: ${ejercicio.nombre || ejercicio.name}`);
         
         // Guardar en Firestore
         await guardarWorkoutEnFirestore();
@@ -551,7 +551,7 @@ async function agregarEjercicioAlWorkout(ejercicio) {
         // Cerrar modal
         cerrarModalAgregarEjercicio();
         
-        mostrarToast(`${ejercicio.name} agregado`);
+        mostrarToast(`${ejercicio.nombre || ejercicio.name} agregado`);
         
     } catch (error) {
         console.error('Error al agregar ejercicio:', error);
