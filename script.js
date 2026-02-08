@@ -1649,16 +1649,6 @@ async function mostrarPersonalRecords() {
             const prCard = document.createElement('div');
             prCard.className = 'pr-card';
             
-            // Formatear valor según tipo de medición
-            let valorDisplay = '';
-            if (record.tipoMedicion === 'peso') {
-                valorDisplay = `${record.serie.peso} kg × ${record.serie.reps}`;
-            } else if (record.tipoMedicion === 'reps') {
-                valorDisplay = `${record.serie.reps} reps`;
-            } else if (record.tipoMedicion === 'tiempo') {
-                valorDisplay = `${record.serie.tiempo}s`;
-            }
-            
             // Formatear fecha
             let fechaDisplay = 'Fecha desconocida';
             if (record.fecha) {
@@ -1666,6 +1656,8 @@ async function mostrarPersonalRecords() {
                 if (record.fecha?.toDate) {
                     fecha = record.fecha.toDate();
                 } else if (typeof record.fecha === 'string') {
+                    fecha = new Date(record.fecha);
+                } else if (typeof record.fecha === 'number') {
                     fecha = new Date(record.fecha);
                 } else {
                     fecha = new Date(record.fecha);
@@ -1682,32 +1674,71 @@ async function mostrarPersonalRecords() {
             
             // Icono según grupo muscular
             const iconos = {
-                'pecho': 'fa-dumbbell',
-                'espalda': 'fa-dumbbell',
-                'piernas': 'fa-running',
-                'hombros': 'fa-dumbbell',
-                'brazos': 'fa-fist-raised',
-                'core': 'fa-walking',
-                'cardio': 'fa-heartbeat',
-                'default': 'fa-trophy'
+                'PECHO': '💪',
+                'ESPALDA': '🔥',
+                'PIERNAS': '🦵',
+                'HOMBROS': '💪',
+                'BRAZOS': '💪',
+                'CORE': '⚡',
+                'CARDIO': '❤️',
+                'ABDOMEN': '⚡'
             };
             
-            const icono = iconos[record.grupoMuscular] || iconos.default;
+            const grupoUpper = (record.grupoMuscular || '').toUpperCase();
+            const icono = iconos[grupoUpper] || '🏆';
+            
+            // Formatear volumen máximo
+            const volumen = record.volumenMax;
+            let volumenHTML = '';
+            
+            if (volumen.serie?.tipo === 'tiempo') {
+                volumenHTML = `
+                    <div class="pr-metric-value">${volumen.serie.tiempo}s</div>
+                    <div class="pr-metric-label">Tiempo máx</div>
+                `;
+            } else if (volumen.serie?.tipo === 'reps') {
+                volumenHTML = `
+                    <div class="pr-metric-value">${volumen.serie.reps}</div>
+                    <div class="pr-metric-label">Reps máx</div>
+                `;
+            } else {
+                volumenHTML = `
+                    <div class="pr-metric-value">${volumen.serie.peso}kg × ${volumen.serie.reps}</div>
+                    <div class="pr-metric-label">= ${Math.round(volumen.valor)}kg</div>
+                `;
+            }
+            
+            // Formatear peso máximo (solo si existe)
+            let pesoHTML = '';
+            if (record.pesoMax && record.pesoMax.serie) {
+                const peso = record.pesoMax;
+                pesoHTML = `
+                    <div class="pr-metric">
+                        <div class="pr-metric-icon">🏋️</div>
+                        <div class="pr-metric-value">${peso.serie.peso}kg</div>
+                        <div class="pr-metric-label">× ${peso.serie.reps} reps</div>
+                    </div>
+                `;
+            }
             
             prCard.innerHTML = `
                 <div class="pr-header">
-                    <div class="pr-icon">
-                        <i class="fas ${icono}"></i>
-                    </div>
+                    <div class="pr-icon">${icono}</div>
                     <div class="pr-title">
                         <h4>${record.exerciseName}</h4>
-                        <p>${record.grupoMuscular}</p>
+                        <span class="pr-grupo">${record.grupoMuscular}</span>
                     </div>
                 </div>
-                <div class="pr-value">${valorDisplay}</div>
-                <div class="pr-date">
+                <div class="pr-metrics">
+                    <div class="pr-metric">
+                        <div class="pr-metric-icon">💪</div>
+                        ${volumenHTML}
+                    </div>
+                    ${pesoHTML}
+                </div>
+                <div class="pr-footer">
                     <i class="fas fa-calendar-alt"></i>
-                    ${fechaDisplay}
+                    <span>${fechaDisplay}</span>
                 </div>
             `;
             

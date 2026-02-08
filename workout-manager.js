@@ -869,7 +869,8 @@ export async function obtenerPersonalRecords(userId, limite = 5, forceRefresh = 
             return [];
         }
         
-        // Mapa para almacenar el mejor registro de cada ejercicio
+        // Mapa para almacenar los mejores registros de cada ejercicio
+        // Ahora guardamos VOLUMEN MÁXIMO y PESO MÁXIMO por separado
         const recordsPorEjercicio = new Map();
         
         snapshot.forEach(doc => {
@@ -880,59 +881,79 @@ export async function obtenerPersonalRecords(userId, limite = 5, forceRefresh = 
             workout.ejercicios.forEach(ej => {
                 if (!ej.series || ej.series.length === 0) return;
                 
-                // Buscar el mejor peso/reps del ejercicio en este workout
-                let mejorSerie = null;
-                let mejorValor = 0;
+                // Buscar VOLUMEN MÁXIMO (peso × reps) y PESO MÁXIMO
+                let mejorVolumen = { valor: 0, serie: null };
+                let mejorPeso = { valor: 0, serie: null };
                 
                 ej.series.forEach(serie => {
                     if (!serie.completada) return;
                     
-                    let valor = 0;
-                    
-                    // Calcular valor según tipo de medición
-                    // Por defecto asumimos peso si no está especificado
                     const peso = serie.peso || 0;
                     const reps = serie.reps || 0;
                     const tiempo = serie.tiempo || 0;
                     
-                    if (tiempo > 0) {
-                        valor = tiempo; // ejercicios de tiempo (plancha, etc)
-                    } else if (peso > 0 && reps > 0) {
-                        valor = peso * reps; // ejercicios con peso
-                    } else if (reps > 0) {
-                        valor = reps; // ejercicios sin peso (flexiones, etc)
+                    // Si tiene peso, calcular volumen y comparar peso
+                    if (peso > 0 && reps > 0) {
+                        const volumen = peso * reps;
+                        
+                        // Mejor volumen
+                        if (volumen > mejorVolumen.valor) {
+                            mejorVolumen = {
+                                valor: volumen,
+                                serie: { ...serie, fecha: workout.fecha }
+                            };
+                        }
+                        
+                        // Mejor peso
+                        if (peso > mejorPeso.valor) {
+                            mejorPeso = {
+                                valor: peso,
+                                serie: { ...serie, fecha: workout.fecha }
+                            };
+                        }
                     }
-                    
-                    if (valor > mejorValor) {
-                        mejorValor = valor;
-                        mejorSerie = {
-                            ...serie,
-                            fecha: workout.fecha
-                        };
+                    // Si es ejercicio de tiempo (plancha, etc)
+                    else if (tiempo > 0) {
+                        if (tiempo > mejorVolumen.valor) {
+                            mejorVolumen = {
+                                valor: tiempo,
+                                serie: { ...serie, fecha: workout.fecha, tipo: 'tiempo' }
+                            };
+                        }
+                    }
+                    // Si solo tiene reps (flexiones, etc)
+                    else if (reps > 0) {
+                        if (reps > mejorVolumen.valor) {
+                            mejorVolumen = {
+                                valor: reps,
+                                serie: { ...serie, fecha: workout.fecha, tipo: 'reps' }
+                            };
+                        }
                     }
                 });
                 
-                if (!mejorSerie) return;
-                
-                // Comparar con el record actual de este ejercicio
-                const recordActual = recordsPorEjercicio.get(ej.exerciseId);
-                
-                if (!recordActual || mejorValor > recordActual.valor) {
-                    recordsPorEjercicio.set(ej.exerciseId, {
-                        exerciseId: ej.exerciseId,
-                        exerciseName: ej.exerciseName || 'Sin nombre',
-                        grupoMuscular: ej.grupoMuscular || 'General',
-                        valor: mejorValor,
-                        serie: mejorSerie,
-                        fecha: workout.fecha
-                    });
+                // Si encontramos al menos un récord
+                if (mejorVolumen.serie) {
+                    const recordActual = recordsPorEjercicio.get(ej.exerciseId);
+                    
+                    // Comparar con el record guardado (usamos volumen como criterio principal)
+                    if (!recordActual || mejorVolumen.valor > recordActual.volumenMax.valor) {
+                        recordsPorEjercicio.set(ej.exerciseId, {
+                            exerciseId: ej.exerciseId,
+                            exerciseName: ej.exerciseName || 'Sin nombre',
+                            grupoMuscular: ej.grupoMuscular || 'General',
+                            volumenMax: mejorVolumen,
+                            pesoMax: mejorPeso.serie ? mejorPeso : null,
+                            fecha: workout.fecha
+                        });
+                    }
                 }
             });
         });
         
-        // Convertir a array y ordenar por valor
+        // Convertir a array y ordenar por volumen máximo
         const records = Array.from(recordsPorEjercicio.values())
-            .sort((a, b) => b.valor - a.valor)
+            .sort((a, b) => b.volumenMax.valor - a.volumenMax.valor)
             .slice(0, limite);
         
         // Guardar en caché
