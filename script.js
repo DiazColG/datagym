@@ -453,39 +453,39 @@ function configurarListenersFirestore() {
         actualizarGraficosConEjercicios(ejercicios);
     });
     
-    // Listener de peso
-    unsubscribePeso = escucharPeso(userId, (historial) => {
-        console.log('Peso actualizado:', historial.length);
-        mostrarHistorialPesoConDatos(historial);
-        actualizarTendenciaPesoConDatos(historial);
-        actualizarGraficoPesoConDatos(historial);
-    });
+    // Listener de peso - DESHABILITADO (feature removida)
+    // unsubscribePeso = escucharPeso(userId, (historial) => {
+    //     console.log('Peso actualizado:', historial.length);
+    //     mostrarHistorialPesoConDatos(historial);
+    //     actualizarTendenciaPesoConDatos(historial);
+    //     actualizarGraficoPesoConDatos(historial);
+    // });
     
-    // Configurar listener de agua para el día actual
-    configurarListenerAgua();
+    // Configurar listener de agua para el día actual - DESHABILITADO (feature removida)
+    // configurarListenerAgua();
     
-    // Verificar cambio de fecha cada minuto
-    checkMidnightInterval = setInterval(() => {
-        const nuevaFecha = new Date().toISOString().slice(0, 10);
-        if (nuevaFecha !== fechaActual) {
-            console.log('Cambio de fecha detectado, actualizando listener de agua...');
-            fechaActual = nuevaFecha;
-            // Reconfigurar listener de agua para el nuevo día
-            if (unsubscribeAgua) {
-                unsubscribeAgua();
-            }
-            configurarListenerAgua();
-        }
-    }, 60000); // Verificar cada minuto
+    // Verificar cambio de fecha cada minuto - DESHABILITADO
+    // checkMidnightInterval = setInterval(() => {
+    //     const nuevaFecha = new Date().toISOString().slice(0, 10);
+    //     if (nuevaFecha !== fechaActual) {
+    //         console.log('Cambio de fecha detectado, actualizando listener de agua...');
+    //         fechaActual = nuevaFecha;
+    //         // Reconfigurar listener de agua para el nuevo día
+    //         if (unsubscribeAgua) {
+    //             unsubscribeAgua();
+    //         }
+    //         configurarListenerAgua();
+    //     }
+    // }, 60000); // Verificar cada minuto
 }
 
-function configurarListenerAgua() {
-    fechaActual = new Date().toISOString().slice(0, 10);
-    unsubscribeAgua = escucharAguaDelDia(userId, fechaActual, (datos) => {
-        console.log('Agua actualizada:', datos.vasos);
-        actualizarVistaAguaConDatos(datos);
-    });
-}
+// function configurarListenerAgua() {
+//     fechaActual = new Date().toISOString().slice(0, 10);
+//     unsubscribeAgua = escucharAguaDelDia(userId, fechaActual, (datos) => {
+//         console.log('Agua actualizada:', datos.vasos);
+//         actualizarVistaAguaConDatos(datos);
+//     });
+// }
 
 // =========================================
 // NAVEGACIÓN ENTRE SECCIONES
