@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Progreso - DataGym</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="mi-progreso.css">
+    
+    <!-- Firebase -->
+    <script type="module" src="firebase-config.js"></script>
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-left">
+                <a href="index.html" class="nav-brand">
+                    <img src="logo.png" alt="DataGym" class="nav-logo">
+                    <span>DataGym</span>
+                </a>
+            </div>
+            
+            <div class="nav-center">
+                <a href="index.html" class="nav-link">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="entrenamientos.html" class="nav-link">
+                    <span>💪</span>
+                    <span>Entrenamientos</span>
+                </a>
+                <a href="mi-progreso.html" class="nav-link active">
+                    <span>📈</span>
+                    <span>Mi Progreso</span>
+                </a>
+            </div>
+            
+            <div class="nav-right">
+                <div class="user-menu" id="userMenu">
+                    <div class="user-circle" id="userCircle">
+                        <span id="userInitials">U</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="mi-progreso.html" class="dropdown-item active">
+                            <span>📊</span>
+                            <span>Mi Progreso</span>
+                        </a>
+                        <a href="#" class="dropdown-item" id="btnCerrarSesion">
+                            <span>🚪</span>
+                            <span>Cerrar Sesión</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="progress-container">
+        
+        <!-- Header -->
+        <header class="progress-header">
+            <div class="progress-header-content">
+                <div class="progress-title-section">
+                    <h1 class="progress-title">📊 Mi Progreso</h1>
+                    <p class="progress-subtitle">Seguimiento de tu evolución corporal</p>
+                </div>
+                <div class="progress-actions">
+                    <button class="btn-secondary" id="btnRegistrarPeso">
+                        <span>⚖️</span>
+                        <span>Registrar Peso</span>
+                    </button>
+                    <button class="btn-secondary" id="btnConfiguracion">
+                        <span>⚙️</span>
+                        <span>Configuración</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <section class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon">⚖️</div>
+                <div class="stat-content">
+                    <div class="stat-label">Peso Actual</div>
+                    <div class="stat-value" id="currentWeight">--</div>
+                    <div class="stat-unit">kg</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-content">
+                    <div class="stat-label">Peso Objetivo</div>
+                    <div class="stat-value" id="goalWeight">--</div>
+                    <div class="stat-unit">kg</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📏</div>
+                <div class="stat-content">
+                    <div class="stat-label">IMC</div>
+                    <div class="stat-value" id="bmiValue">--</div>
+                    <div class="stat-badge" id="bmiCategory">--</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-content">
+                    <div class="stat-label">Racha</div>
+                    <div class="stat-value" id="streakValue">--</div>
+                    <div class="stat-unit">días</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Bar -->
+        <section class="progress-section" id="progressSection">
+            <div class="progress-card">
+                <div class="progress-card-header">
+                    <h3>Progreso hacia tu objetivo</h3>
+                    <span class="progress-percentage" id="progressPercentage">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-labels">
+                    <span class="progress-label-start">
+                        <span class="label-text">Inicial</span>
+                        <span class="label-value" id="initialWeight">--</span>
+                    </span>
+                    <span class="progress-label-end">
+                        <span class="label-text">Objetivo</span>
+                        <span class="label-value" id="goalWeightLabel">--</span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gráfico de Evolución -->
+        <section class="chart-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Evolución de Peso</h3>
+                    <div class="chart-filters">
+                        <button class="filter-btn active" data-days="30">30D</button>
+                        <button class="filter-btn" data-days="60">60D</button>
+                        <button class="filter-btn" data-days="90">90D</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="weightChart"></canvas>
+                </div>
+                <div class="chart-stats">
+                    <div class="chart-stat">
+                        <span class="chart-stat-label">Mín</span>
+                        <span class="chart-stat-value" id="minWeight">--</span>
+                    </div>
+                    <div class="chart-stat">
+                        <span class="chart-stat-label">Máx</span>
+                        <span class="chart-stat-value" id="maxWeight">--</span>
+                    </div>
+                    <div class="chart-stat">
+                        <span class="chart-stat-label">Promedio</span>
+                        <span class="chart-stat-value" id="avgWeight">--</span>
+                    </div>
+                    <div class="chart-stat">
+                        <span class="chart-stat-label">Cambio</span>
+                        <span class="chart-stat-value" id="totalChange">--</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Historial -->
+        <section class="history-section">
+            <div class="history-card">
+                <div class="history-header">
+                    <h3>Historial de Registros</h3>
+                    <span class="history-count" id="historyCount">0 registros</span>
+                </div>
+                <div class="history-list" id="historyList">
+                    <!-- Dinámico con JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📊</div>
+            <h3 class="empty-title">Comienza tu seguimiento</h3>
+            <p class="empty-message">Configura tu perfil para empezar a registrar tu progreso</p>
+            <button class="btn-primary" id="btnStartSetup">
+                <span>🚀</span>
+                <span>Configurar Ahora</span>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Modal: Configuración Inicial -->
+    <div class="modal" id="modalSetup">
+        <div class="modal-overlay" id="setupOverlay"></div>
+        <div class="modal-content modal-setup">
+            <div class="modal-header">
+                <h2 class="modal-title">⚙️ Configuración de Perfil</h2>
+                <button class="modal-close" id="closeSetup">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="setupForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">📏</span>
+                            <span>Altura (cm)</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            class="form-input" 
+                            id="inputHeight" 
+                            min="100" 
+                            max="250" 
+                            step="0.1"
+                            placeholder="Ej: 175"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">⚖️</span>
+                            <span>Peso Inicial (kg)</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            class="form-input" 
+                            id="inputInitialWeight" 
+                            min="30" 
+                            max="300" 
+                            step="0.1"
+                            placeholder="Ej: 75.5"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">🎯</span>
+                            <span>Peso Objetivo (kg)</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            class="form-input" 
+                            id="inputGoalWeight" 
+                            min="30" 
+                            max="300" 
+                            step="0.1"
+                            placeholder="Ej: 70"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-info">
+                        <span class="info-icon">💡</span>
+                        <span>Podrás modificar estos valores en cualquier momento</span>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-primary btn-block" id="btnSaveSetup">
+                            <span>✅</span>
+                            <span>Guardar Configuración</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Registrar Peso Diario -->
+    <div class="modal" id="modalDailyWeight">
+        <div class="modal-overlay" id="dailyWeightOverlay"></div>
+        <div class="modal-content modal-daily">
+            <div class="modal-header">
+                <h2 class="modal-title">⚖️ Registrar Peso</h2>
+                <button class="modal-close" id="closeDailyWeight">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="dailyWeightForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">📅</span>
+                            <span id="currentDate">Hoy</span>
+                        </label>
+                        <div class="weight-input-group">
+                            <input 
+                                type="number" 
+                                class="form-input form-input-large" 
+                                id="inputDailyWeight" 
+                                min="30" 
+                                max="300" 
+                                step="0.1"
+                                placeholder="75.5"
+                                required
+                            >
+                            <span class="input-suffix">kg</span>
+                        </div>
+                    </div>
+
+                    <div class="daily-info" id="dailyInfo">
+                        <!-- Dinámico: diferencia con último peso -->
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-primary btn-block" id="btnSaveDailyWeight">
+                            <span>✅</span>
+                            <span>Registrar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Confetti Canvas (para celebraciones) -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script type="module" src="weight-manager.js"></script>
+    <script type="module" src="mi-progreso.js"></script>
+</body>
+</html>

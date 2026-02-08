@@ -113,6 +113,12 @@ function mostrarInfoUsuario(user) {
         userInfo.style.display = 'flex';
     }
     
+    // Actualizar iniciales en el círculo del usuario
+    const userInitials = document.getElementById('userInitials');
+    if (userInitials && user.email) {
+        userInitials.textContent = user.email.charAt(0).toUpperCase();
+    }
+    
     const userAvatar = document.getElementById('userAvatar');
     if (userAvatar) {
         if (user.photoURL) {

@@ -84,14 +84,21 @@
             
             <!-- Información del usuario -->
             <div class="user-info" id="userInfo" style="display: none;">
-                <button id="btnMiCuenta" class="btn-mi-cuenta" title="Mi Cuenta">
-                    <i class="fas fa-user-circle"></i>
-                </button>
-                <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
-                <span id="userName" class="user-name"></span>
-                <button id="btnLogout" class="btn-logout" title="Cerrar sesión">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
+                <div class="user-menu">
+                    <div class="user-circle" id="userCircle" title="Mi Cuenta">
+                        <span id="userInitials">U</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="mi-progreso.html" class="dropdown-item">
+                            <span>📊</span>
+                            <span>Mi Progreso</span>
+                        </a>
+                        <a href="#" class="dropdown-item" id="btnLogout">
+                            <span>🚪</span>
+                            <span>Cerrar Sesión</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
