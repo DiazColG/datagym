@@ -1,5 +1,5 @@
 // ================================================
-// BASE DE DATOS COMPLETA: 200 EJERCICIOS
+// BASE DE DATOS COMPLETA: 247 EJERCICIOS
 // Estructura optimizada para analytics y tracking
 // ================================================
 
@@ -8,6 +8,9 @@ import { EXERCISES_DB_EXTENDED as EXERCISES_PECHO_ESPALDA } from './exercises-co
 import { EXERCISES_PIERNAS } from './exercises-complete-part2.js';
 import { EXERCISES_HOMBROS, EXERCISES_BICEPS, EXERCISES_TRICEPS } from './exercises-complete-part3.js';
 import { EXERCISES_CORE, EXERCISES_GLUTEOS, EXERCISES_CARDIO, EXERCISES_ACCESORIOS } from './exercises-complete-part4.js';
+
+// Importar ejercicios faltantes (reparación integridad rutinas)
+import { EXERCISES_MISSING_48 } from './exercises-missing-48.js';
 
 // Combinar todos los ejercicios
 export const EXERCISES_DB_COMPLETE = [
@@ -19,38 +22,41 @@ export const EXERCISES_DB_COMPLETE = [
     ...EXERCISES_CORE,
     ...EXERCISES_GLUTEOS,
     ...EXERCISES_CARDIO,
-    ...EXERCISES_ACCESORIOS
+    ...EXERCISES_ACCESORIOS,
+    ...EXERCISES_MISSING_48
 ];
 
 // Estadísticas de la base de datos
 export const DB_STATS = {
-    total: 200,
+    total: 247,
     por_grupo: {
-        pecho: 20,
-        espalda: 30,
-        piernas: 35,
-        hombros: 20,
-        biceps: 15,
-        triceps: 15,
-        core: 20,
-        gluteos: 15,
-        cardio: 15,
-        antebrazos: 15
+        pecho: 24,
+        espalda: 39,
+        piernas: 44,
+        hombros: 23,
+        biceps: 17,
+        triceps: 17,
+        core: 25,
+        gluteos: 19,
+        cardio: 17,
+        antebrazos: 9,
+        fullbody: 7,
+        accesorios: 6
     },
     equipamiento: {
-        'peso corporal': 45,
-        'barra': 40,
-        'mancuerna': 35,
-        'maquina': 30,
-        'polea': 25,
+        'peso_corporal': 55,
+        'barra': 50,
+        'mancuerna': 42,
+        'maquina': 35,
+        'cable': 28,
+        'accesorios': 22,
         'banda': 10,
-        'kettlebell': 5,
-        'otros': 10
+        'kettlebell': 5
     },
     nivel_tecnica: {
-        principiante: 80,
-        intermedio: 75,
-        avanzado: 45
+        principiante: 95,
+        intermedio: 95,
+        avanzado: 57
     }
 };
 
